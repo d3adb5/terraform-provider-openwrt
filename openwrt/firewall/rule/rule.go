@@ -29,7 +29,7 @@ const (
 	schemaDescription = "Legacy VLAN configuration"
 
 	uciConfig = "firewall"
-	uciType   = "forwarding"
+	uciType   = "rule"
 )
 
 var (
