@@ -23,17 +23,17 @@ const (
 	portsAttributeDescription = "A string of space-separated port indicies that should be associated with the VLAN. Adding the suffix `\"t\"` to a port indicates that egress packets should be tagged, for example `\"0 1 3t 5t\"`."
 	portsUCIOption            = "ports"
 
-	schemaDescription = "Legacy VLAN configuration"
+	schemaDescription = "Legacy VLAN configuration for devices using the swconfig subsystem."
 
 	uciConfig = "network"
 	uciType   = "switch_vlan"
 
 	vIdAttribute            = "vid"
-	vIdAttributeDescription = "The VLAN tag number to use."
+	vIdAttributeDescription = "The VLAN tag number (VLAN ID) to use. Overrides the 'vlan' attribute for tagging."
 	vIdUCIOption            = "vid"
 
 	vLanAttribute            = "vlan"
-	vLanAttributeDescription = `The VLAN "table index" to configure. This index corresponds to the order on LuCI's UI`
+	vLanAttributeDescription = `The VLAN "table index" to configure. This index corresponds to the order on LuCI's UI. It is also used as the VLAN ID if 'vid' is not specified.`
 	vLanUCIOption            = "vlan"
 )
 

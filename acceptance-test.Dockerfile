@@ -1,7 +1,7 @@
-FROM openwrtorg/rootfs:x86_64-22.03.3@sha256:bf650d3c71a5d31c51c50228c2991c6f41ef672080f911f28ce61e6ea4d54637
+FROM openwrt/rootfs:x86_64-SNAPSHOT
 
-RUN mkdir /var/lock
-RUN opkg update && opkg install \
+RUN mkdir -p /var/lock
+RUN apk update && apk add \
     # Install curl so we can make a healthcheck
     # wget is installed, but it's hard to use for a health check.
     curl \
@@ -14,7 +14,12 @@ RUN opkg update && opkg install \
     # This is entirely for debugging/diagnosis purposes.
     luci \
     luci-ssl
-RUN /etc/init.d/uhttpd restart
+RUN /etc/init.d/dropbear enable
+RUN /etc/init.d/uhttpd enable
+
+EXPOSE 22 80 443
+
+CMD ["/sbin/init"]
 
 HEALTHCHECK --interval=5s CMD curl \
     --data '{"id": 1, "method": "login", "params": ["root", ""]}' \

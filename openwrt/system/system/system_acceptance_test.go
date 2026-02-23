@@ -33,8 +33,8 @@ data "openwrt_system_system" "this" {
 		Check: resource.ComposeAggregateTestCheckFunc(
 			resource.TestCheckResourceAttr("data.openwrt_system_system.this", "id", "cfg01e48a"),
 			resource.TestCheckResourceAttr("data.openwrt_system_system.this", "hostname", "OpenWrt"),
-			resource.TestCheckResourceAttr("data.openwrt_system_system.this", "log_size", "64"),
-			resource.TestCheckResourceAttr("data.openwrt_system_system.this", "timezone", "UTC"),
+			resource.TestCheckResourceAttr("data.openwrt_system_system.this", "log_size", "128"),
+			resource.TestCheckResourceAttr("data.openwrt_system_system.this", "timezone", "GMT0"),
 			resource.TestCheckResourceAttr("data.openwrt_system_system.this", "ttylogin", "false"),
 		),
 	}
@@ -83,8 +83,8 @@ resource "openwrt_system_system" "this" {
 		Check: resource.ComposeAggregateTestCheckFunc(
 			resource.TestCheckResourceAttr("openwrt_system_system.this", "id", "cfg01e48a"),
 			resource.TestCheckResourceAttr("openwrt_system_system.this", "hostname", "OpenWrt"),
-			resource.TestCheckResourceAttr("openwrt_system_system.this", "log_size", "64"),
-			resource.TestCheckResourceAttr("openwrt_system_system.this", "timezone", "UTC"),
+			resource.TestCheckResourceAttr("openwrt_system_system.this", "log_size", "128"),
+			resource.TestCheckResourceAttr("openwrt_system_system.this", "timezone", "GMT0"),
 			resource.TestCheckResourceAttr("openwrt_system_system.this", "ttylogin", "false"),
 		),
 	}

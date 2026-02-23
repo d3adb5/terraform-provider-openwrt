@@ -3,12 +3,12 @@
 page_title: "openwrt_firewall_zone Data Source - openwrt"
 subcategory: ""
 description: |-
-  Legacy VLAN configuration
+  Manages a firewall zone. Zones group network interfaces and define default policies for traffic.
 ---
 
 # openwrt_firewall_zone (Data Source)
 
-Legacy VLAN configuration
+Manages a firewall zone. Zones group network interfaces and define default policies for traffic.
 
 
 
@@ -21,9 +21,20 @@ Legacy VLAN configuration
 
 ### Read-Only
 
-- `forward` (String) forward config
-- `input` (String) input config
+- `auto_helper` (Boolean) Automatically assign conntrack helpers based on destination port.
+- `conntrack` (Boolean) Force connection tracking for all traffic in this zone.
+- `family` (String) Protocol family to apply the zone to (ipv4, ipv6, any).
+- `forward` (String) Default policy for forwarded traffic in this zone (ACCEPT, REJECT, DROP).
+- `input` (String) Default policy for traffic entering this zone (ACCEPT, REJECT, DROP).
+- `log` (Boolean) Enable logging for packets rejected or dropped by this zone's default policy.
+- `log_limit` (String) Rate limit for log messages, e.g. "10/minute".
+- `masq` (Boolean) Enable masquerading (NAT) for outbound traffic from this zone.
+- `masq_allow_invalid` (Boolean) Allow masquerading of packets with an invalid conntrack state.
+- `masq_dest` (List of String) Restrict masquerading to traffic destined for these prefixes.
+- `masq_src` (List of String) Restrict masquerading to traffic originating from these source prefixes.
+- `mtu_fix` (Boolean) Enable MSS clamping for outgoing TCP connections in this zone.
 - `name` (String) The name of the zone.
-- `output` (String) output config
+- `network` (List of String) List of interfaces or networks belonging to this zone.
+- `output` (String) Default policy for traffic leaving this zone (ACCEPT, REJECT, DROP).
 
 

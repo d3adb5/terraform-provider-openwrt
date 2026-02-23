@@ -21,7 +21,9 @@ import (
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/domain"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/host"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/odhcpd"
+	"github.com/joneshf/terraform-provider-openwrt/openwrt/firewall/defaults"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/firewall/forwarding"
+	"github.com/joneshf/terraform-provider-openwrt/openwrt/firewall/redirect"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/firewall/rule"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/firewall/zone"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/internal/lucirpcglue"
@@ -167,6 +169,7 @@ func (p *openWrtProvider) DataSources(
 ) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		bridgevlan.NewDataSource,
+		defaults.NewDataSource,
 		device.NewDataSource,
 		dhcp.NewDataSource,
 		dnsmasq.NewDataSource,
@@ -177,6 +180,7 @@ func (p *openWrtProvider) DataSources(
 		networkinterface.NewDataSource,
 		networkswitch.NewDataSource,
 		odhcpd.NewDataSource,
+		redirect.NewDataSource,
 		switchvlan.NewDataSource,
 		rule.NewDataSource,
 		system.NewDataSource,
@@ -202,6 +206,7 @@ func (p *openWrtProvider) Resources(
 ) []func() resource.Resource {
 	return []func() resource.Resource{
 		bridgevlan.NewResource,
+		defaults.NewResource,
 		device.NewResource,
 		dhcp.NewResource,
 		dnsmasq.NewResource,
@@ -212,6 +217,7 @@ func (p *openWrtProvider) Resources(
 		networkinterface.NewResource,
 		networkswitch.NewResource,
 		odhcpd.NewResource,
+		redirect.NewResource,
 		rule.NewResource,
 		switchvlan.NewResource,
 		system.NewResource,

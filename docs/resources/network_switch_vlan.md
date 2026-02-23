@@ -3,12 +3,12 @@
 page_title: "openwrt_network_switch_vlan Resource - openwrt"
 subcategory: ""
 description: |-
-  Legacy VLAN configuration
+  Legacy VLAN configuration for devices using the swconfig subsystem.
 ---
 
 # openwrt_network_switch_vlan (Resource)
 
-Legacy VLAN configuration
+Legacy VLAN configuration for devices using the swconfig subsystem.
 
 ## Example Usage
 
@@ -35,13 +35,13 @@ resource "openwrt_network_switch_vlan" "testing" {
 
 - `device` (String) The switch to configure.
 - `ports` (String) A string of space-separated port indicies that should be associated with the VLAN. Adding the suffix `"t"` to a port indicates that egress packets should be tagged, for example `"0 1 3t 5t"`.
-- `vlan` (Number) The VLAN "table index" to configure. This index corresponds to the order on LuCI's UI
+- `vlan` (Number) The VLAN "table index" to configure. This index corresponds to the order on LuCI's UI. It is also used as the VLAN ID if 'vid' is not specified.
 
 ### Optional
 
 - `description` (String) A human-readable description of the VLAN configuration.
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
-- `vid` (Number) The VLAN tag number to use.
+- `vid` (Number) The VLAN tag number (VLAN ID) to use. Overrides the 'vlan' attribute for tagging.
 
 ## Import
 

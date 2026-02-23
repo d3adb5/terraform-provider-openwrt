@@ -1,6 +1,6 @@
 //go:build acceptance.test
 
-package globals_test
+package rule_test
 
 import (
 	"context"
@@ -26,10 +26,10 @@ func TestDataSourceAcceptance(t *testing.T) {
 	)
 	providerBlock := openWrtServer.ProviderBlock()
 	options := lucirpc.Options{
-		"packet_steering": lucirpc.Boolean(false),
-		"ula_prefix":      lucirpc.String("fd12:3456:789a::/48"),
+		"name":   lucirpc.String("testing"),
+		"target": lucirpc.String("ACCEPT"),
 	}
-	ok, err := client.CreateSection(ctx, "network", "globals", "globals", options)
+	ok, err := client.CreateSection(ctx, "firewall", "rule", "testing", options)
 	assert.NilError(t, err)
 	assert.Check(t, ok)
 
@@ -37,16 +37,16 @@ func TestDataSourceAcceptance(t *testing.T) {
 		Config: fmt.Sprintf(`
 %s
 
-data "openwrt_network_globals" "this" {
-	id = "globals"
+data "openwrt_firewall_rule" "testing" {
+	id = "testing"
 }
 `,
 			providerBlock,
 		),
 		Check: resource.ComposeAggregateTestCheckFunc(
-			resource.TestCheckResourceAttr("data.openwrt_network_globals.this", "id", "globals"),
-			resource.TestCheckResourceAttr("data.openwrt_network_globals.this", "packet_steering", "false"),
-			resource.TestCheckResourceAttr("data.openwrt_network_globals.this", "ula_prefix", "fd12:3456:789a::/48"),
+			resource.TestCheckResourceAttr("data.openwrt_firewall_rule.testing", "id", "testing"),
+			resource.TestCheckResourceAttr("data.openwrt_firewall_rule.testing", "name", "testing"),
+			resource.TestCheckResourceAttr("data.openwrt_firewall_rule.testing", "target", "ACCEPT"),
 		),
 	}
 
@@ -69,39 +69,47 @@ func TestResourceAcceptance(t *testing.T) {
 		Config: fmt.Sprintf(`
 %s
 
-resource "openwrt_network_globals" "this" {
-	id = "globals"
+resource "openwrt_firewall_rule" "testing" {
+	id     = "testing"
+	name   = "testing"
+	target = "ACCEPT"
 }
 `,
 			providerBlock,
 		),
 		Check: resource.ComposeAggregateTestCheckFunc(
-			resource.TestCheckResourceAttr("openwrt_network_globals.this", "id", "globals"),
-			resource.TestCheckNoResourceAttr("openwrt_network_globals.this", "network_steering"),
-			resource.TestCheckResourceAttrSet("openwrt_network_globals.this", "ula_prefix"),
+			resource.TestCheckResourceAttr("openwrt_firewall_rule.testing", "id", "testing"),
+			resource.TestCheckResourceAttr("openwrt_firewall_rule.testing", "name", "testing"),
+			resource.TestCheckResourceAttr("openwrt_firewall_rule.testing", "target", "ACCEPT"),
 		),
 	}
+
 	importValidation := resource.TestStep{
 		ImportState:       true,
 		ImportStateVerify: true,
-		ResourceName:      "openwrt_network_globals.this",
+		ResourceName:      "openwrt_firewall_rule.testing",
 	}
+
 	updateAndReadResource := resource.TestStep{
 		Config: fmt.Sprintf(`
 %s
 
-resource "openwrt_network_globals" "this" {
-	id = "globals"
-	packet_steering = false
-	ula_prefix = "fd12:3456:789a::/48"
+resource "openwrt_firewall_rule" "testing" {
+	id     = "testing"
+	name   = "testing"
+	target = "ACCEPT"
+	src    = "lan"
+	dest   = "wan"
 }
 `,
 			providerBlock,
 		),
 		Check: resource.ComposeAggregateTestCheckFunc(
-			resource.TestCheckResourceAttr("openwrt_network_globals.this", "id", "globals"),
-			resource.TestCheckResourceAttr("openwrt_network_globals.this", "packet_steering", "false"),
-			resource.TestCheckResourceAttr("openwrt_network_globals.this", "ula_prefix", "fd12:3456:789a::/48"),
+			resource.TestCheckResourceAttr("openwrt_firewall_rule.testing", "id", "testing"),
+			resource.TestCheckResourceAttr("openwrt_firewall_rule.testing", "name", "testing"),
+			resource.TestCheckResourceAttr("openwrt_firewall_rule.testing", "target", "ACCEPT"),
+			resource.TestCheckResourceAttr("openwrt_firewall_rule.testing", "src", "lan"),
+			resource.TestCheckResourceAttr("openwrt_firewall_rule.testing", "dest", "wan"),
 		),
 	}
 
