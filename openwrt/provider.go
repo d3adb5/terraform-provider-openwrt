@@ -21,6 +21,7 @@ import (
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/domain"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/host"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/odhcpd"
+	"github.com/joneshf/terraform-provider-openwrt/openwrt/firewall/defaults"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/firewall/forwarding"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/firewall/redirect"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/firewall/rule"
@@ -168,6 +169,7 @@ func (p *openWrtProvider) DataSources(
 ) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		bridgevlan.NewDataSource,
+		defaults.NewDataSource,
 		device.NewDataSource,
 		dhcp.NewDataSource,
 		dnsmasq.NewDataSource,
@@ -204,6 +206,7 @@ func (p *openWrtProvider) Resources(
 ) []func() resource.Resource {
 	return []func() resource.Resource{
 		bridgevlan.NewResource,
+		defaults.NewResource,
 		device.NewResource,
 		dhcp.NewResource,
 		dnsmasq.NewResource,
