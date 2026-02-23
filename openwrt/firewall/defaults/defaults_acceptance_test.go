@@ -25,16 +25,17 @@ func TestDataSourceAcceptance(t *testing.T) {
 %s
 
 data "openwrt_firewall_defaults" "this" {
-	id = "cfg01ad5f"
+	id = "cfg01e63d"
 }
 `,
 			providerBlock,
 		),
 		Check: resource.ComposeAggregateTestCheckFunc(
-			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "id", "cfg01ad5f"),
+			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "id", "cfg01e63d"),
 			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "input", "REJECT"),
 			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "output", "ACCEPT"),
 			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "forward", "REJECT"),
+			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "syn_flood", "true"),
 		),
 	}
 
@@ -58,13 +59,13 @@ func TestResourceAcceptance(t *testing.T) {
 %s
 
 resource "openwrt_firewall_defaults" "this" {
-	id = "cfg01ad5f"
+	id = "cfg01e63d"
 }
 `,
 			providerBlock,
 		),
 		ImportState:        true,
-		ImportStateId:      "cfg01ad5f",
+		ImportStateId:      "cfg01e63d",
 		ImportStatePersist: true,
 		ResourceName:       "openwrt_firewall_defaults.this",
 	}
@@ -74,16 +75,17 @@ resource "openwrt_firewall_defaults" "this" {
 %s
 
 resource "openwrt_firewall_defaults" "this" {
-	id = "cfg01ad5f"
+	id = "cfg01e63d"
 }
 `,
 			providerBlock,
 		),
 		Check: resource.ComposeAggregateTestCheckFunc(
-			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "id", "cfg01ad5f"),
+			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "id", "cfg01e63d"),
 			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "input", "REJECT"),
 			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "output", "ACCEPT"),
 			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "forward", "REJECT"),
+			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "syn_flood", "true"),
 		),
 	}
 
@@ -92,7 +94,7 @@ resource "openwrt_firewall_defaults" "this" {
 %s
 
 resource "openwrt_firewall_defaults" "this" {
-	id           = "cfg01ad5f"
+	id           = "cfg01e63d"
 	drop_invalid = true
 	forward      = "REJECT"
 	input        = "REJECT"
@@ -102,7 +104,7 @@ resource "openwrt_firewall_defaults" "this" {
 			providerBlock,
 		),
 		Check: resource.ComposeAggregateTestCheckFunc(
-			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "id", "cfg01ad5f"),
+			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "id", "cfg01e63d"),
 			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "drop_invalid", "true"),
 			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "forward", "REJECT"),
 			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "input", "REJECT"),
