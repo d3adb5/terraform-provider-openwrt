@@ -23,8 +23,8 @@ resource "openwrt_network_switch_vlan" "testing" {
   device = openwrt_network_switch.testing.name
   id     = "testing"
   ports  = "0t 1t"
-  vid    = 10
-  vlan   = 2
+  vid    = "10"
+  vlan   = "2"
 }
 ```
 
@@ -60,10 +60,10 @@ Import is supported using the following syntax:
 #
 # [
 #   {
-#     "terraformId": "cfg123456"
+#     "terraformId": "cfg123456",
 #   },
 #   {
-#     "terraformId": "cfg123457"
+#     "terraformId": "cfg123457",
 #   }
 # ]
 #

@@ -32,3 +32,5 @@ data "openwrt_network_switch_vlan" "testing" {
 - `ports` (String) A string of space-separated port indicies that should be associated with the VLAN. Adding the suffix `"t"` to a port indicates that egress packets should be tagged, for example `"0 1 3t 5t"`.
 - `vid` (Number) The VLAN tag number (VLAN ID) to use. Overrides the 'vlan' attribute for tagging.
 - `vlan` (Number) The VLAN "table index" to configure. This index corresponds to the order on LuCI's UI. It is also used as the VLAN ID if 'vid' is not specified.
+
+
