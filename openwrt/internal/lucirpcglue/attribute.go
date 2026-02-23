@@ -11,6 +11,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -141,12 +147,17 @@ func (a BoolSchemaAttribute[Model, Request, Response]) ToDataSource() datasource
 }
 
 func (a BoolSchemaAttribute[Model, Request, Response]) ToResource() resourceschema.Attribute {
+	var boolModifiers []planmodifier.Bool
+	if a.ResourceExistence.ToComputed() {
+		boolModifiers = []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()}
+	}
 	return resourceschema.BoolAttribute{
 		Computed:            a.ResourceExistence.ToComputed(),
 		DeprecationMessage:  a.DeprecationMessage,
 		Description:         a.Description,
 		MarkdownDescription: a.MarkdownDescription,
 		Optional:            a.ResourceExistence.ToOptional(),
+		PlanModifiers:       boolModifiers,
 		Required:            a.ResourceExistence.ToRequired(),
 		Sensitive:           a.Sensitive,
 		Validators:          a.Validators,
@@ -238,12 +249,17 @@ func (a Int64SchemaAttribute[Model, Request, Response]) ToDataSource() datasourc
 }
 
 func (a Int64SchemaAttribute[Model, Request, Response]) ToResource() resourceschema.Attribute {
+	var int64Modifiers []planmodifier.Int64
+	if a.ResourceExistence.ToComputed() {
+		int64Modifiers = []planmodifier.Int64{int64planmodifier.UseStateForUnknown()}
+	}
 	return resourceschema.Int64Attribute{
 		Computed:            a.ResourceExistence.ToComputed(),
 		DeprecationMessage:  a.DeprecationMessage,
 		Description:         a.Description,
 		MarkdownDescription: a.MarkdownDescription,
 		Optional:            a.ResourceExistence.ToOptional(),
+		PlanModifiers:       int64Modifiers,
 		Required:            a.ResourceExistence.ToRequired(),
 		Sensitive:           a.Sensitive,
 		Validators:          a.Validators,
@@ -304,6 +320,10 @@ func (a ListStringSchemaAttribute[Model, Request, Response]) ToDataSource() data
 }
 
 func (a ListStringSchemaAttribute[Model, Request, Response]) ToResource() resourceschema.Attribute {
+	var listModifiers []planmodifier.List
+	if a.ResourceExistence.ToComputed() {
+		listModifiers = []planmodifier.List{listplanmodifier.UseStateForUnknown()}
+	}
 	return resourceschema.ListAttribute{
 		Computed:            a.ResourceExistence.ToComputed(),
 		DeprecationMessage:  a.DeprecationMessage,
@@ -311,6 +331,7 @@ func (a ListStringSchemaAttribute[Model, Request, Response]) ToResource() resour
 		ElementType:         types.StringType,
 		MarkdownDescription: a.MarkdownDescription,
 		Optional:            a.ResourceExistence.ToOptional(),
+		PlanModifiers:       listModifiers,
 		Required:            a.ResourceExistence.ToRequired(),
 		Sensitive:           a.Sensitive,
 		Validators:          a.Validators,
@@ -501,6 +522,10 @@ func (a SetStringSchemaAttribute[Model, Request, Response]) ToDataSource() datas
 }
 
 func (a SetStringSchemaAttribute[Model, Request, Response]) ToResource() resourceschema.Attribute {
+	var setModifiers []planmodifier.Set
+	if a.ResourceExistence.ToComputed() {
+		setModifiers = []planmodifier.Set{setplanmodifier.UseStateForUnknown()}
+	}
 	return resourceschema.SetAttribute{
 		Computed:            a.ResourceExistence.ToComputed(),
 		DeprecationMessage:  a.DeprecationMessage,
@@ -508,6 +533,7 @@ func (a SetStringSchemaAttribute[Model, Request, Response]) ToResource() resourc
 		ElementType:         types.StringType,
 		MarkdownDescription: a.MarkdownDescription,
 		Optional:            a.ResourceExistence.ToOptional(),
+		PlanModifiers:       setModifiers,
 		Required:            a.ResourceExistence.ToRequired(),
 		Sensitive:           a.Sensitive,
 		Validators:          a.Validators,
@@ -567,12 +593,17 @@ func (a StringSchemaAttribute[Model, Request, Response]) ToDataSource() datasour
 }
 
 func (a StringSchemaAttribute[Model, Request, Response]) ToResource() resourceschema.Attribute {
+	var stringModifiers []planmodifier.String
+	if a.ResourceExistence.ToComputed() {
+		stringModifiers = []planmodifier.String{stringplanmodifier.UseStateForUnknown()}
+	}
 	return resourceschema.StringAttribute{
 		Computed:            a.ResourceExistence.ToComputed(),
 		DeprecationMessage:  a.DeprecationMessage,
 		Description:         a.Description,
 		MarkdownDescription: a.MarkdownDescription,
 		Optional:            a.ResourceExistence.ToOptional(),
+		PlanModifiers:       stringModifiers,
 		Required:            a.ResourceExistence.ToRequired(),
 		Sensitive:           a.Sensitive,
 		Validators:          a.Validators,

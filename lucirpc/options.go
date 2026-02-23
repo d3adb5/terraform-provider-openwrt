@@ -366,6 +366,9 @@ func (o *optionListString) AsListString() ([]string, error) {
 }
 
 func (o *optionListString) AsString() (string, error) {
+	if len(o.value) == 1 {
+		return o.value[0], nil
+	}
 	return "", NewOptionTypeMismatchError("a string", "a list of strings")
 }
 
@@ -411,7 +414,7 @@ func (o *optionString) AsInteger() (int, error) {
 }
 
 func (o *optionString) AsListString() ([]string, error) {
-	return nil, NewOptionTypeMismatchError("a list of strings", "a string")
+	return []string{o.value}, nil
 }
 
 func (o *optionString) AsString() (string, error) {

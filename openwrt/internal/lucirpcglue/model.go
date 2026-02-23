@@ -55,5 +55,5 @@ func ReadModel[Model any](
 		allDiagnostics.Append(diagnostics...)
 	}
 
-	return ctx, model, diagnostics
+	return ctx, model, allDiagnostics
 }

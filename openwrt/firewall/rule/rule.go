@@ -3,6 +3,7 @@ package rule
 import (
 	"regexp"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -50,7 +51,7 @@ const (
 	destPortUCIOption            = "dest_port"
 
 	protoAttribute            = "proto"
-	protoAttributeDescription = "Match traffic using this protocol (e.g. tcp, udp, tcpudp, icmp, all)."
+	protoAttributeDescription = "List of protocols to match (e.g. [\"tcp\"], [\"udp\"], [\"tcp\", \"udp\"], [\"icmp\"], [\"all\"])."
 	protoUCIOption            = "proto"
 
 	familyAttribute            = "family"
@@ -192,12 +193,12 @@ var (
 		Validators:        portValidators,
 	}
 
-	protoSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+	protoSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       protoAttributeDescription,
-		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetProto, protoAttribute, protoUCIOption),
+		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetProto, protoAttribute, protoUCIOption),
 		ResourceExistence: lucirpcglue.NoValidation,
-		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetProto, protoAttribute, protoUCIOption),
-		Validators:        protoValidators,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetProto, protoAttribute, protoUCIOption),
+		Validators:        []validator.List{listvalidator.ValueStringsAre(protoValidators...)},
 	}
 
 	familySchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -263,7 +264,7 @@ type model struct {
 	Dest     types.String `tfsdk:"dest"`
 	DestIp   types.String `tfsdk:"dest_ip"`
 	DestPort types.String `tfsdk:"dest_port"`
-	Proto    types.String `tfsdk:"proto"`
+	Proto    types.List   `tfsdk:"proto"`
 	Family   types.String `tfsdk:"family"`
 	Enabled  types.Bool   `tfsdk:"enabled"`
 }
@@ -278,7 +279,7 @@ func modelGetSrcPort(m model) types.String { return m.SrcPort }
 func modelGetDest(m model) types.String    { return m.Dest }
 func modelGetDestIp(m model) types.String  { return m.DestIp }
 func modelGetDestPort(m model) types.String { return m.DestPort }
-func modelGetProto(m model) types.String   { return m.Proto }
+func modelGetProto(m model) types.List     { return m.Proto }
 func modelGetFamily(m model) types.String  { return m.Family }
 func modelGetEnabled(m model) types.Bool   { return m.Enabled }
 
@@ -292,6 +293,6 @@ func modelSetSrcPort(m *model, value types.String)  { m.SrcPort = value }
 func modelSetDest(m *model, value types.String)     { m.Dest = value }
 func modelSetDestIp(m *model, value types.String)   { m.DestIp = value }
 func modelSetDestPort(m *model, value types.String) { m.DestPort = value }
-func modelSetProto(m *model, value types.String)    { m.Proto = value }
+func modelSetProto(m *model, value types.List)      { m.Proto = value }
 func modelSetFamily(m *model, value types.String)   { m.Family = value }
 func modelSetEnabled(m *model, value types.Bool)    { m.Enabled = value }

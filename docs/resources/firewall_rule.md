@@ -28,7 +28,7 @@ Defines a firewall rule to accept, drop, or reject traffic matching the given cr
 - `enabled` (Boolean) Enable or disable this rule.
 - `family` (String) Protocol family to match (ipv4, ipv6, any).
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
-- `proto` (String) Match traffic using this protocol (e.g. tcp, udp, tcpudp, icmp, all).
+- `proto` (List of String) List of protocols to match (e.g. ["tcp"], ["udp"], ["tcp", "udp"], ["icmp"], ["all"]).
 - `src` (String) Source zone. If omitted, the rule matches traffic from any zone.
 - `src_ip` (String) Match traffic from this source IP address or CIDR range.
 - `src_mac` (String) Match traffic from this source MAC address.
