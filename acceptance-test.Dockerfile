@@ -14,7 +14,10 @@ RUN apk update && apk add \
     # This is entirely for debugging/diagnosis purposes.
     luci \
     luci-ssl
+RUN /etc/init.d/dropbear enable
 RUN /etc/init.d/uhttpd enable
+
+EXPOSE 22 80 443
 
 CMD ["/sbin/init"]
 
