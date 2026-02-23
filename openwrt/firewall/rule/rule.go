@@ -1,6 +1,8 @@
 package rule
 
 import (
+	"regexp"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -79,11 +81,51 @@ var (
 		stringvalidator.OneOf("ipv4", "ipv6", "any"),
 	}
 
+	// protoValidators accepts named protocols and numeric protocol numbers.
+	protoValidators = []validator.String{
+		stringvalidator.RegexMatches(
+			regexp.MustCompile(`^(tcp|udp|tcpudp|udplite|icmp|icmpv6|esp|ah|sctp|all|\d+)$`),
+			`must be a protocol name (tcp, udp, tcpudp, udplite, icmp, icmpv6, esp, ah, sctp, all) or a numeric protocol number`,
+		),
+	}
+
+	// macAddressValidators accepts standard colon-separated MAC addresses,
+	// optionally prefixed with ! for negation.
+	macAddressValidators = []validator.String{
+		stringvalidator.RegexMatches(
+			regexp.MustCompile(`^!?([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$`),
+			`must be a MAC address in the format XX:XX:XX:XX:XX:XX, optionally prefixed with ! to negate`,
+		),
+	}
+
+	// portValidators accepts a single port, a range (80:443), or a
+	// comma-separated list thereof, each optionally prefixed with !.
+	portValidators = []validator.String{
+		stringvalidator.RegexMatches(
+			regexp.MustCompile(`^!?\d+(:\d+)?(,!?\d+(:\d+)?)*$`),
+			`must be a port number (e.g. "80"), a range (e.g. "80:443"), or a comma-separated list (e.g. "80,443"), optionally prefixed with ! to negate`,
+		),
+	}
+
+	// ipCidrValidators accepts an IPv4 or IPv6 address with an optional CIDR
+	// suffix, optionally prefixed with ! for negation.
+	ipCidrValidators = []validator.String{
+		stringvalidator.RegexMatches(
+			regexp.MustCompile(`^!?[0-9a-fA-F.:][0-9a-fA-F.:/]*$`),
+			`must be an IPv4 or IPv6 address or CIDR range (e.g. "192.168.1.0/24" or "2001:db8::/32"), optionally prefixed with ! to negate`,
+		),
+	}
+
+	zoneValidators = []validator.String{
+		stringvalidator.LengthAtLeast(1),
+	}
+
 	nameSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       nameAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetName, nameAttribute, nameUCIOption),
 		ResourceExistence: lucirpcglue.Required,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetName, nameAttribute, nameUCIOption),
+		Validators:        zoneValidators,
 	}
 
 	targetSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -99,6 +141,7 @@ var (
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetSrc, srcAttribute, srcUCIOption),
 		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetSrc, srcAttribute, srcUCIOption),
+		Validators:        zoneValidators,
 	}
 
 	srcIpSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -106,6 +149,7 @@ var (
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetSrcIp, srcIpAttribute, srcIpUCIOption),
 		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetSrcIp, srcIpAttribute, srcIpUCIOption),
+		Validators:        ipCidrValidators,
 	}
 
 	srcMacSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -113,6 +157,7 @@ var (
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetSrcMac, srcMacAttribute, srcMacUCIOption),
 		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetSrcMac, srcMacAttribute, srcMacUCIOption),
+		Validators:        macAddressValidators,
 	}
 
 	srcPortSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -120,6 +165,7 @@ var (
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetSrcPort, srcPortAttribute, srcPortUCIOption),
 		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetSrcPort, srcPortAttribute, srcPortUCIOption),
+		Validators:        portValidators,
 	}
 
 	destSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -127,6 +173,7 @@ var (
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetDest, destAttribute, destUCIOption),
 		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetDest, destAttribute, destUCIOption),
+		Validators:        zoneValidators,
 	}
 
 	destIpSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -134,6 +181,7 @@ var (
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetDestIp, destIpAttribute, destIpUCIOption),
 		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetDestIp, destIpAttribute, destIpUCIOption),
+		Validators:        ipCidrValidators,
 	}
 
 	destPortSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -141,6 +189,7 @@ var (
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetDestPort, destPortAttribute, destPortUCIOption),
 		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetDestPort, destPortAttribute, destPortUCIOption),
+		Validators:        portValidators,
 	}
 
 	protoSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -148,6 +197,7 @@ var (
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetProto, protoAttribute, protoUCIOption),
 		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetProto, protoAttribute, protoUCIOption),
+		Validators:        protoValidators,
 	}
 
 	familySchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
