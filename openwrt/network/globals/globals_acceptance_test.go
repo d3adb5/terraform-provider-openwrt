@@ -78,7 +78,7 @@ resource "openwrt_network_globals" "this" {
 		Check: resource.ComposeAggregateTestCheckFunc(
 			resource.TestCheckResourceAttr("openwrt_network_globals.this", "id", "globals"),
 			resource.TestCheckNoResourceAttr("openwrt_network_globals.this", "network_steering"),
-			resource.TestCheckNoResourceAttr("openwrt_network_globals.this", "ula_prefix"),
+			resource.TestCheckResourceAttrSet("openwrt_network_globals.this", "ula_prefix"),
 		),
 	}
 	importValidation := resource.TestStep{
