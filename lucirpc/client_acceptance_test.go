@@ -365,10 +365,11 @@ func TestClientGetSectionAcceptance(t *testing.T) {
 			".name":        lucirpc.String("cfg01e48a"),
 			".type":        lucirpc.String("system"),
 			"hostname":     lucirpc.String("OpenWrt"),
-			"log_size":     lucirpc.Integer(64),
-			"timezone":     lucirpc.String("UTC"),
+			"log_size":     lucirpc.Integer(128),
+			"timezone":     lucirpc.String("GMT0"),
 			"ttylogin":     lucirpc.Boolean(false),
 			"urandom_seed": lucirpc.Boolean(false),
+			"zonename":     lucirpc.String("UTC"),
 		}
 		assert.DeepEqual(t, got, want)
 	})
