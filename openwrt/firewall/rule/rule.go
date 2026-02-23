@@ -35,7 +35,7 @@ const (
 	srcMacUCIOption            = "src_mac"
 
 	srcPortAttribute            = "src_port"
-	srcPortAttributeDescription = "Match traffic from this source port or port range (e.g. \"80\" or \"80:443\")."
+	srcPortAttributeDescription = "Match traffic from this source port or port range (e.g. \"80\" or \"67-68\")."
 	srcPortUCIOption            = "src_port"
 
 	destAttribute            = "dest"
@@ -47,7 +47,7 @@ const (
 	destIpUCIOption            = "dest_ip"
 
 	destPortAttribute            = "dest_port"
-	destPortAttributeDescription = "Match traffic to this destination port or port range (e.g. \"80\" or \"80:443\")."
+	destPortAttributeDescription = "Match traffic to this destination port or port range (e.g. \"80\" or \"67-68\")."
 	destPortUCIOption            = "dest_port"
 
 	protoAttribute            = "proto"
@@ -99,12 +99,12 @@ var (
 		),
 	}
 
-	// portValidators accepts a single port, a range (80:443), or a
+	// portValidators accepts a single port, a range (80-443 or 80:443), or a
 	// comma-separated list thereof, each optionally prefixed with !.
 	portValidators = []validator.String{
 		stringvalidator.RegexMatches(
-			regexp.MustCompile(`^!?\d+(:\d+)?(,!?\d+(:\d+)?)*$`),
-			`must be a port number (e.g. "80"), a range (e.g. "80:443"), or a comma-separated list (e.g. "80,443"), optionally prefixed with ! to negate`,
+			regexp.MustCompile(`^!?\d+([:-]\d+)?(,!?\d+([:-]\d+)?)*$`),
+			`must be a port number (e.g. "80"), a range (e.g. "67-68"), or a comma-separated list (e.g. "80,443"), optionally prefixed with ! to negate`,
 		),
 	}
 
