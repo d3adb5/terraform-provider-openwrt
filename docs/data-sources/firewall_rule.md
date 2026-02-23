@@ -23,15 +23,15 @@ Defines a firewall rule to accept, drop, or reject traffic matching the given cr
 
 - `dest` (String) Destination zone. If omitted, the rule matches traffic to any destination.
 - `dest_ip` (String) Match traffic to this destination IP address or CIDR range.
-- `dest_port` (String) Match traffic to this destination port or port range (e.g. "80" or "80:443").
+- `dest_port` (String) Match traffic to this destination port or port range (e.g. "80" or "67-68").
 - `enabled` (Boolean) Enable or disable this rule.
 - `family` (String) Protocol family to match (ipv4, ipv6, any).
 - `name` (String) Name of the rule.
-- `proto` (String) Match traffic using this protocol (e.g. tcp, udp, tcpudp, icmp, all).
+- `proto` (List of String) List of protocols to match (e.g. ["tcp"], ["udp"], ["tcp", "udp"], ["icmp"], ["all"]).
 - `src` (String) Source zone. If omitted, the rule matches traffic from any zone.
 - `src_ip` (String) Match traffic from this source IP address or CIDR range.
 - `src_mac` (String) Match traffic from this source MAC address.
-- `src_port` (String) Match traffic from this source port or port range (e.g. "80" or "80:443").
+- `src_port` (String) Match traffic from this source port or port range (e.g. "80" or "67-68").
 - `target` (String) Action to take for matching traffic (ACCEPT, REJECT, DROP, NOTRACK).
 
 

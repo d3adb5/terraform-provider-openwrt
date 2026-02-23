@@ -24,7 +24,7 @@ Defines a firewall rule to accept, drop, or reject traffic matching the given cr
 
 - `dest` (String) Destination zone. If omitted, the rule matches traffic to any destination.
 - `dest_ip` (String) Match traffic to this destination IP address or CIDR range.
-- `dest_port` (String) Match traffic to this destination port or port range (e.g. "80" or "80:443").
+- `dest_port` (String) Match traffic to this destination port or port range (e.g. "80" or "67-68").
 - `enabled` (Boolean) Enable or disable this rule.
 - `family` (String) Protocol family to match (ipv4, ipv6, any).
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
@@ -32,6 +32,6 @@ Defines a firewall rule to accept, drop, or reject traffic matching the given cr
 - `src` (String) Source zone. If omitted, the rule matches traffic from any zone.
 - `src_ip` (String) Match traffic from this source IP address or CIDR range.
 - `src_mac` (String) Match traffic from this source MAC address.
-- `src_port` (String) Match traffic from this source port or port range (e.g. "80" or "80:443").
+- `src_port` (String) Match traffic from this source port or port range (e.g. "80" or "67-68").
 
 
