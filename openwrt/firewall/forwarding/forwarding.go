@@ -10,14 +10,14 @@ import (
 
 const (
 	destAttribute            = "dest"
-	destAttributeDescription = "zone dest"
+	destAttributeDescription = "Name of the destination zone."
 	destUCIOption            = "dest"
 
 	srcAttribute            = "src"
-	srcAttributeDescription = "zone src"
+	srcAttributeDescription = "Name of the source zone."
 	srcUCIOption            = "src"
 
-	schemaDescription = "Legacy VLAN configuration"
+	schemaDescription = "Allows traffic to flow from one firewall zone to another."
 
 	uciConfig = "firewall"
 	uciType   = "forwarding"

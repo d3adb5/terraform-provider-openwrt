@@ -16,18 +16,18 @@ const (
 	nameUCIOption            = "name"
 
 	forwardAttribute            = "forward"
-	forwardAttributeDescription = "forward config"
+	forwardAttributeDescription = "Default policy for forwarded traffic in this zone (ACCEPT, REJECT, DROP)."
 	forwardUCIOption            = "forward"
 
 	inputAttribute            = "input"
-	inputAttributeDescription = "input config"
+	inputAttributeDescription = "Default policy for traffic entering this zone (ACCEPT, REJECT, DROP)."
 	inputUCIOption            = "input"
 
 	outputAttribute            = "output"
-	outputAttributeDescription = "output config"
+	outputAttributeDescription = "Default policy for traffic leaving this zone (ACCEPT, REJECT, DROP)."
 	outputUCIOption            = "output"
 
-	schemaDescription = "Legacy VLAN configuration"
+	schemaDescription = "Manages a firewall zone. Zones group network interfaces and define default policies for traffic."
 
 	uciConfig = "firewall"
 	uciType   = "zone"

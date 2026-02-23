@@ -11,22 +11,22 @@ import (
 
 const (
 	nameAttribute            = "name"
-	nameAttributeDescription = "rule name"
+	nameAttributeDescription = "Name of the rule."
 	nameUCIOption            = "name"
 
 	targetAttribute            = "target"
-	targetAttributeDescription = "rule target"
+	targetAttributeDescription = "Action to take for matching traffic (ACCEPT, REJECT, DROP, NOTRACK)."
 	targetUCIOption            = "target"
 
 	destAttribute            = "dest"
-	destAttributeDescription = "zone dest"
+	destAttributeDescription = "Destination zone. If omitted, the rule matches traffic to any destination."
 	destUCIOption            = "dest"
 
 	srcAttribute            = "src"
-	srcAttributeDescription = "zone src"
+	srcAttributeDescription = "Source zone. If omitted, the rule matches traffic from any zone."
 	srcUCIOption            = "src"
 
-	schemaDescription = "Legacy VLAN configuration"
+	schemaDescription = "Defines a firewall rule to accept, drop, or reject traffic matching the given criteria."
 
 	uciConfig = "firewall"
 	uciType   = "rule"
