@@ -72,7 +72,7 @@ resource "openwrt_network_interface" "testing" {
 - `reqaddress` (String) Behavior for requesting address. Can only be one of "force", "try", or "none".
 - `reqprefix` (String) Behavior for requesting prefixes. Currently, only "auto" is supported.
 - `service` (String) PPPoE service name (ISP-specific). PPPoE only.
-- `username` (String) PPPoE username for authentication. PPPoE only.
+- `username` (String, Sensitive) PPPoE username for authentication. PPPoE only.
 
 ## Import
 

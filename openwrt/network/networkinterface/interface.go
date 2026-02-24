@@ -448,6 +448,7 @@ var (
 		Description:       pppoeUsernameAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetPPPoEUsername, pppoeUsernameAttribute, pppoeUsernameUCIOption),
 		ResourceExistence: lucirpcglue.Optional,
+		Sensitive:         true,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetPPPoEUsername, pppoeUsernameAttribute, pppoeUsernameUCIOption),
 		Validators: []validator.String{
 			lucirpcglue.RequiresAttributeEqualString(
