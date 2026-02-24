@@ -181,6 +181,10 @@ var (
 				),
 				lucirpcglue.RequiresAttributeEqualString(
 					path.MatchRoot(protocolAttribute),
+					protocolPPPoE,
+				),
+				lucirpcglue.RequiresAttributeEqualString(
+					path.MatchRoot(protocolAttribute),
 					protocolStatic,
 				),
 			),
@@ -374,6 +378,10 @@ var (
 				lucirpcglue.RequiresAttributeEqualString(
 					path.MatchRoot(protocolAttribute),
 					protocolDHCPV6,
+				),
+				lucirpcglue.RequiresAttributeEqualString(
+					path.MatchRoot(protocolAttribute),
+					protocolPPPoE,
 				),
 			),
 		},
