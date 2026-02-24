@@ -41,7 +41,7 @@ var (
 	descriptionSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       descriptionAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetDescription, descriptionAttribute, descriptionUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetDescription, descriptionAttribute, descriptionUCIOption),
 	}
 
@@ -71,10 +71,10 @@ var (
 	vIdSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       vIdAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetVId, vIdAttribute, vIdUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetVId, vIdAttribute, vIdUCIOption),
 		Validators: []validator.Int64{
-			int64validator.Any(),
+			int64validator.Between(1, 4094),
 		},
 	}
 
@@ -84,7 +84,7 @@ var (
 		ResourceExistence: lucirpcglue.Required,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetVLan, vLanAttribute, vLanUCIOption),
 		Validators: []validator.Int64{
-			int64validator.Any(),
+			int64validator.Between(1, 4094),
 		},
 	}
 )

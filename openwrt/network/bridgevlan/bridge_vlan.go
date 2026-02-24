@@ -57,7 +57,7 @@ var (
 		ResourceExistence: lucirpcglue.Required,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetVLan, vLanAttribute, vLanUCIOption),
 		Validators: []validator.Int64{
-			int64validator.Any(),
+			int64validator.Between(1, 4094),
 		},
 	}
 )
