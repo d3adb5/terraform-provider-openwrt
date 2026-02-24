@@ -16,6 +16,9 @@ RUN apk update && apk add \
     luci-ssl
 RUN /etc/init.d/dropbear enable
 RUN /etc/init.d/uhttpd enable
+# Create an empty ddns config file so UCI can create sections in it
+# (ddns-scripts creates this on real routers, but is not installed here)
+RUN touch /etc/config/ddns
 
 EXPOSE 22 80 443
 

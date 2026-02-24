@@ -16,6 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
+	ddnsservice "github.com/joneshf/terraform-provider-openwrt/openwrt/ddns/service"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/dhcp"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/dnsmasq"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/domain"
@@ -169,6 +170,7 @@ func (p *openWrtProvider) DataSources(
 ) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		bridgevlan.NewDataSource,
+		ddnsservice.NewDataSource,
 		defaults.NewDataSource,
 		device.NewDataSource,
 		dhcp.NewDataSource,
@@ -206,6 +208,7 @@ func (p *openWrtProvider) Resources(
 ) []func() resource.Resource {
 	return []func() resource.Resource{
 		bridgevlan.NewResource,
+		ddnsservice.NewResource,
 		defaults.NewResource,
 		device.NewResource,
 		dhcp.NewResource,
