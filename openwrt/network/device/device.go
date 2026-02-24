@@ -21,7 +21,7 @@ const (
 	modeUCIOption            = "mode"
 
 	ifnameAttribute            = "ifname"
-	ifnameAttributeDescription = "Base L2 device to create the macvlan on."
+	ifnameAttributeDescription = "Parent L2 device for macvlan or VLAN devices."
 	ifnameUCIOption            = "ifname"
 
 	bridgePortsAttribute            = "ports"
@@ -63,10 +63,16 @@ const (
 	txQueueLengthUCIOption            = "txqueuelen"
 
 	typeAttribute            = "type"
-	typeAttributeDescription = `The type of device. Supported values: "bridge", "macvlan". Omit for plain device configuration (e.g. overriding macaddr on an existing interface).`
+	typeAttributeDescription = `The type of device. Supported values: "bridge", "macvlan", "8021q", "8021ad". Omit for plain device configuration (e.g. overriding macaddr on an existing interface).`
+	type8021ad               = "8021ad"
+	type8021q                = "8021q"
 	typeBridge               = "bridge"
 	typeMacVlan              = "macvlan"
 	typeUCIOption            = "type"
+
+	vlanIDAttribute            = "vid"
+	vlanIDAttributeDescription = "VLAN ID for 802.1q or 802.1ad VLAN devices (1-4094)."
+	vlanIDUCIOption            = "vid"
 
 	uciConfig = "network"
 	uciType   = "device"
@@ -92,9 +98,19 @@ var (
 		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetIfname, ifnameAttribute, ifnameUCIOption),
 		Validators: []validator.String{
-			lucirpcglue.RequiresAttributeEqualString(
-				path.MatchRoot(typeAttribute),
-				typeMacVlan,
+			stringvalidator.Any(
+				lucirpcglue.RequiresAttributeEqualString(
+					path.MatchRoot(typeAttribute),
+					type8021ad,
+				),
+				lucirpcglue.RequiresAttributeEqualString(
+					path.MatchRoot(typeAttribute),
+					type8021q,
+				),
+				lucirpcglue.RequiresAttributeEqualString(
+					path.MatchRoot(typeAttribute),
+					typeMacVlan,
+				),
 			),
 		},
 	}
@@ -204,6 +220,7 @@ var (
 		typeAttribute:               typeSchemaAttribute,
 		modeAttribute:               modeSchemaAttribute,
 		ifnameAttribute:             ifnameSchemaAttribute,
+		vlanIDAttribute:             vlanIDSchemaAttribute,
 		lucirpcglue.IdAttribute:     lucirpcglue.IdSchemaAttribute(modelGetId, modelSetId),
 	}
 
@@ -224,8 +241,30 @@ var (
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetType, typeAttribute, typeUCIOption),
 		Validators: []validator.String{
 			stringvalidator.OneOf(
+				type8021ad,
+				type8021q,
 				typeBridge,
 				typeMacVlan,
+			),
+		},
+	}
+
+	vlanIDSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       vlanIDAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetVLANID, vlanIDAttribute, vlanIDUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetVLANID, vlanIDAttribute, vlanIDUCIOption),
+		Validators: []validator.Int64{
+			int64validator.Between(1, 4094),
+			int64validator.Any(
+				lucirpcglue.RequiresAttributeEqualString(
+					path.MatchRoot(typeAttribute),
+					type8021ad,
+				),
+				lucirpcglue.RequiresAttributeEqualString(
+					path.MatchRoot(typeAttribute),
+					type8021q,
+				),
 			),
 		},
 	}
@@ -257,40 +296,43 @@ type model struct {
 	DADTransmits       types.Int64  `tfsdk:"dadtransmits"`
 	EnableIPv6         types.Bool   `tfsdk:"ipv6"`
 	Id                 types.String `tfsdk:"id"`
+	Ifname             types.String `tfsdk:"ifname"`
 	MacAddress         types.String `tfsdk:"macaddr"`
+	Mode               types.String `tfsdk:"mode"`
 	MTU                types.Int64  `tfsdk:"mtu"`
 	MTU6               types.Int64  `tfsdk:"mtu6"`
 	Name               types.String `tfsdk:"name"`
 	TXQueueLength      types.Int64  `tfsdk:"txqueuelen"`
 	Type               types.String `tfsdk:"type"`
-	Mode               types.String `tfsdk:"mode"`
-	Ifname             types.String `tfsdk:"ifname"`
+	VLANID             types.Int64  `tfsdk:"vid"`
 }
 
-func modelGetIfname(m model) types.String           { return m.Ifname }
-func modelGetMode(m model) types.String             { return m.Mode }
 func modelGetBridgePorts(m model) types.Set         { return m.BridgePorts }
 func modelGetBringUpEmptyBridge(m model) types.Bool { return m.BringUpEmptyBridge }
 func modelGetDADTransmits(m model) types.Int64      { return m.DADTransmits }
 func modelGetEnableIPv6(m model) types.Bool         { return m.EnableIPv6 }
 func modelGetId(m model) types.String               { return m.Id }
+func modelGetIfname(m model) types.String           { return m.Ifname }
 func modelGetMacAddress(m model) types.String       { return m.MacAddress }
+func modelGetMode(m model) types.String             { return m.Mode }
 func modelGetMTU(m model) types.Int64               { return m.MTU }
 func modelGetMTU6(m model) types.Int64              { return m.MTU6 }
 func modelGetName(m model) types.String             { return m.Name }
 func modelGetTXQueueLength(m model) types.Int64     { return m.TXQueueLength }
 func modelGetType(m model) types.String             { return m.Type }
+func modelGetVLANID(m model) types.Int64            { return m.VLANID }
 
-func modelSetIfname(m *model, value types.String)           { m.Ifname = value }
-func modelSetMode(m *model, value types.String)             { m.Mode = value }
 func modelSetBridgePorts(m *model, value types.Set)         { m.BridgePorts = value }
 func modelSetBringUpEmptyBridge(m *model, value types.Bool) { m.BringUpEmptyBridge = value }
 func modelSetDADTransmits(m *model, value types.Int64)      { m.DADTransmits = value }
 func modelSetEnableIPv6(m *model, value types.Bool)         { m.EnableIPv6 = value }
 func modelSetId(m *model, value types.String)               { m.Id = value }
+func modelSetIfname(m *model, value types.String)           { m.Ifname = value }
 func modelSetMacAddress(m *model, value types.String)       { m.MacAddress = value }
+func modelSetMode(m *model, value types.String)             { m.Mode = value }
 func modelSetMTU(m *model, value types.Int64)               { m.MTU = value }
 func modelSetMTU6(m *model, value types.Int64)              { m.MTU6 = value }
 func modelSetName(m *model, value types.String)             { m.Name = value }
 func modelSetTXQueueLength(m *model, value types.Int64)     { m.TXQueueLength = value }
 func modelSetType(m *model, value types.String)             { m.Type = value }
+func modelSetVLANID(m *model, value types.Int64)            { m.VLANID = value }
