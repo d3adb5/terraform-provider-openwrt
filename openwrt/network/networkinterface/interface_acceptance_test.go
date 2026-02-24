@@ -288,3 +288,80 @@ resource "openwrt_network_interface" "testing" {
 		step,
 	)
 }
+
+func TestResourcePppoeAcceptance(t *testing.T) {
+	ctx := context.Background()
+	openWrtServer := acceptancetest.RunOpenWrtServer(
+		ctx,
+		*dockerPool,
+		t,
+	)
+	providerBlock := openWrtServer.ProviderBlock()
+
+	createAndReadResource := resource.TestStep{
+		Config: fmt.Sprintf(`
+%s
+
+resource "openwrt_network_interface" "testing" {
+	device    = "eth0"
+	id        = "testing"
+	keepalive = "5 15"
+	proto     = "pppoe"
+	username  = "user@isp.example"
+	password  = "s3cr3t"
+}
+`,
+			providerBlock,
+		),
+		Check: resource.ComposeAggregateTestCheckFunc(
+			resource.TestCheckResourceAttr("openwrt_network_interface.testing", "id", "testing"),
+			resource.TestCheckResourceAttr("openwrt_network_interface.testing", "device", "eth0"),
+			resource.TestCheckResourceAttr("openwrt_network_interface.testing", "keepalive", "5 15"),
+			resource.TestCheckResourceAttr("openwrt_network_interface.testing", "proto", "pppoe"),
+			resource.TestCheckResourceAttr("openwrt_network_interface.testing", "username", "user@isp.example"),
+			resource.TestCheckResourceAttr("openwrt_network_interface.testing", "password", "s3cr3t"),
+		),
+	}
+	importValidation := resource.TestStep{
+		ImportState:       true,
+		ImportStateVerify: true,
+		ResourceName:      "openwrt_network_interface.testing",
+	}
+
+	acceptancetest.TerraformSteps(
+		t,
+		createAndReadResource,
+		importValidation,
+	)
+}
+
+func TestResourcePppoeUsernameWithoutPppoeProtoAcceptance(t *testing.T) {
+	ctx := context.Background()
+	openWrtServer := acceptancetest.RunOpenWrtServer(
+		ctx,
+		*dockerPool,
+		t,
+	)
+	providerBlock := openWrtServer.ProviderBlock()
+
+	invalidStep := resource.TestStep{
+		Config: fmt.Sprintf(`
+%s
+
+resource "openwrt_network_interface" "testing" {
+	device   = "eth0"
+	id       = "testing"
+	proto    = "dhcp"
+	username = "user@isp.example"
+}
+`,
+			providerBlock,
+		),
+		ExpectError: regexp.MustCompile(`username`),
+	}
+
+	acceptancetest.TerraformSteps(
+		t,
+		invalidStep,
+	)
+}

@@ -43,10 +43,11 @@ resource "openwrt_network_interface" "testing" {
 ### Required
 
 - `device` (String) Name of the (physical or virtual) device. This name is what the device is known as in LuCI or the `name` field in Terraform. This is not the UCI config name.
-- `proto` (String) The protocol type of the interface. Currently, only "dhcp, and "static" are supported.
+- `proto` (String) The protocol type of the interface (e.g. "static", "dhcp", "dhcpv6", "pppoe").
 
 ### Optional
 
+- `ac` (String) PPPoE Access Concentrator name to connect to (PPPoE only).
 - `auto` (Boolean) Specifies whether to bring up this interface on boot.
 - `disabled` (Boolean) Disables this interface.
 - `dns` (List of String) DNS servers
@@ -54,13 +55,17 @@ resource "openwrt_network_interface" "testing" {
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
 - `ip6assign` (Number) Delegate a prefix of given length to this interface
 - `ipaddr` (String) IP address of the interface
+- `keepalive` (String) LCP echo keepalive configuration in the format "failures interval" (e.g. "5 15" means 5 failures with 15 second interval). PPPoE only.
 - `macaddr` (String) Override the MAC Address of this interface.
 - `metric` (Number) Route metric for this interface. Lower values are preferred.
 - `mtu` (Number) Override the default MTU on this interface.
 - `netmask` (String) Netmask of the interface
+- `password` (String, Sensitive) PPPoE password for authentication. PPPoE only.
 - `peerdns` (Boolean) Use DHCP-provided DNS servers.
 - `reqaddress` (String) Behavior for requesting address. Can only be one of "force", "try", or "none".
 - `reqprefix` (String) Behavior for requesting prefixes. Currently, only "auto" is supported.
+- `service` (String) PPPoE service name (ISP-specific). PPPoE only.
+- `username` (String) PPPoE username for authentication. PPPoE only.
 
 ## Import
 

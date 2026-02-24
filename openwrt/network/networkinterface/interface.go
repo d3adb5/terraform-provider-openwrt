@@ -64,10 +64,31 @@ const (
 	peerDNSAttributeDescription = "Use DHCP-provided DNS servers."
 	peerDNSUCIOption            = "peerdns"
 
+	pppoeACAttribute            = "ac"
+	pppoeACAttributeDescription = "PPPoE Access Concentrator name to connect to (PPPoE only)."
+	pppoeACUCIOption            = "ac"
+
+	pppoeKeepAliveAttribute            = "keepalive"
+	pppoeKeepAliveAttributeDescription = `LCP echo keepalive configuration in the format "failures interval" (e.g. "5 15" means 5 failures with 15 second interval). PPPoE only.`
+	pppoeKeepAliveUCIOption            = "keepalive"
+
+	pppoePasswordAttribute            = "password"
+	pppoePasswordAttributeDescription = "PPPoE password for authentication. PPPoE only."
+	pppoePasswordUCIOption            = "password"
+
+	pppoeServiceAttribute            = "service"
+	pppoeServiceAttributeDescription = "PPPoE service name (ISP-specific). PPPoE only."
+	pppoeServiceUCIOption            = "service"
+
+	pppoeUsernameAttribute            = "username"
+	pppoeUsernameAttributeDescription = "PPPoE username for authentication. PPPoE only."
+	pppoeUsernameUCIOption            = "username"
+
 	protocolAttribute            = "proto"
-	protocolAttributeDescription = `The protocol type of the interface. Currently, only "dhcp, and "static" are supported.`
+	protocolAttributeDescription = `The protocol type of the interface (e.g. "static", "dhcp", "dhcpv6", "pppoe").`
 	protocolDHCP                 = "dhcp"
 	protocolDHCPV6               = "dhcpv6"
+	protocolPPPoE                = "pppoe"
 	protocolStatic               = "static"
 	protocolUCIOption            = "proto"
 
@@ -251,6 +272,76 @@ var (
 		},
 	}
 
+	pppoeACSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       pppoeACAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetPPPoEAC, pppoeACAttribute, pppoeACUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetPPPoEAC, pppoeACAttribute, pppoeACUCIOption),
+		Validators: []validator.String{
+			lucirpcglue.RequiresAttributeEqualString(
+				path.MatchRoot(protocolAttribute),
+				protocolPPPoE,
+			),
+		},
+	}
+
+	pppoeKeepAliveSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       pppoeKeepAliveAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetPPPoEKeepAlive, pppoeKeepAliveAttribute, pppoeKeepAliveUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetPPPoEKeepAlive, pppoeKeepAliveAttribute, pppoeKeepAliveUCIOption),
+		Validators: []validator.String{
+			stringvalidator.RegexMatches(
+				regexp.MustCompile(`^\d+ \d+$`),
+				`must be in the format "failures interval" (e.g. "5 15")`,
+			),
+			lucirpcglue.RequiresAttributeEqualString(
+				path.MatchRoot(protocolAttribute),
+				protocolPPPoE,
+			),
+		},
+	}
+
+	pppoePasswordSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       pppoePasswordAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetPPPoEPassword, pppoePasswordAttribute, pppoePasswordUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		Sensitive:         true,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetPPPoEPassword, pppoePasswordAttribute, pppoePasswordUCIOption),
+		Validators: []validator.String{
+			lucirpcglue.RequiresAttributeEqualString(
+				path.MatchRoot(protocolAttribute),
+				protocolPPPoE,
+			),
+		},
+	}
+
+	pppoeServiceSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       pppoeServiceAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetPPPoEService, pppoeServiceAttribute, pppoeServiceUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetPPPoEService, pppoeServiceAttribute, pppoeServiceUCIOption),
+		Validators: []validator.String{
+			lucirpcglue.RequiresAttributeEqualString(
+				path.MatchRoot(protocolAttribute),
+				protocolPPPoE,
+			),
+		},
+	}
+
+	pppoeUsernameSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       pppoeUsernameAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetPPPoEUsername, pppoeUsernameAttribute, pppoeUsernameUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetPPPoEUsername, pppoeUsernameAttribute, pppoeUsernameUCIOption),
+		Validators: []validator.String{
+			lucirpcglue.RequiresAttributeEqualString(
+				path.MatchRoot(protocolAttribute),
+				protocolPPPoE,
+			),
+		},
+	}
+
 	protocolSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       protocolAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetProtocol, protocolAttribute, protocolUCIOption),
@@ -260,6 +351,7 @@ var (
 			stringvalidator.OneOf(
 				protocolDHCP,
 				protocolDHCPV6,
+				protocolPPPoE,
 				protocolStatic,
 			),
 		},
@@ -311,8 +403,13 @@ var (
 		mtuAttribute:               mtuSchemaAttribute,
 		metricAttribute:            metricSchemaAttribute,
 		netmaskAttribute:           netmaskSchemaAttribute,
-		peerDNSAttribute:           peerDNSSchemaAttribute,
-		protocolAttribute:          protocolSchemaAttribute,
+		peerDNSAttribute:            peerDNSSchemaAttribute,
+		pppoeACAttribute:            pppoeACSchemaAttribute,
+		pppoeKeepAliveAttribute:     pppoeKeepAliveSchemaAttribute,
+		pppoePasswordAttribute:      pppoePasswordSchemaAttribute,
+		pppoeServiceAttribute:       pppoeServiceSchemaAttribute,
+		pppoeUsernameAttribute:      pppoeUsernameSchemaAttribute,
+		protocolAttribute:           protocolSchemaAttribute,
 		requestingAddressAttribute: requestingAddressSchemaAttribute,
 		requestingPrefixAttribute:  requestingPrefixSchemaAttribute,
 		lucirpcglue.IdAttribute:    lucirpcglue.IdSchemaAttribute(modelGetId, modelSetId),
@@ -349,16 +446,20 @@ type model struct {
 	IP6Assign         types.Int64  `tfsdk:"ip6assign"`
 	IPAddress         types.String `tfsdk:"ipaddr"`
 	MacAddress        types.String `tfsdk:"macaddr"`
+	Metric            types.Int64  `tfsdk:"metric"`
 	MTU               types.Int64  `tfsdk:"mtu"`
 	Netmask           types.String `tfsdk:"netmask"`
 	PeerDNS           types.Bool   `tfsdk:"peerdns"`
+	PPPoEAC           types.String `tfsdk:"ac"`
+	PPPoEKeepAlive    types.String `tfsdk:"keepalive"`
+	PPPoEPassword     types.String `tfsdk:"password"`
+	PPPoEService      types.String `tfsdk:"service"`
+	PPPoEUsername     types.String `tfsdk:"username"`
 	Protocol          types.String `tfsdk:"proto"`
 	RequestingAddress types.String `tfsdk:"reqaddress"`
 	RequestingPrefix  types.String `tfsdk:"reqprefix"`
-	Metric            types.Int64  `tfsdk:"metric"`
 }
 
-func modelGetMetric(m model) types.Int64             { return m.Metric }
 func modelGetBringUpOnBoot(m model) types.Bool       { return m.BringUpOnBoot }
 func modelGetDevice(m model) types.String            { return m.Device }
 func modelGetDisabled(m model) types.Bool            { return m.Disabled }
@@ -368,14 +469,19 @@ func modelGetId(m model) types.String                { return m.Id }
 func modelGetIP6Assign(m model) types.Int64          { return m.IP6Assign }
 func modelGetIPAddress(m model) types.String         { return m.IPAddress }
 func modelGetMacAddress(m model) types.String        { return m.MacAddress }
+func modelGetMetric(m model) types.Int64             { return m.Metric }
 func modelGetMTU(m model) types.Int64                { return m.MTU }
 func modelGetNetmask(m model) types.String           { return m.Netmask }
 func modelGetPeerDNS(m model) types.Bool             { return m.PeerDNS }
+func modelGetPPPoEAC(m model) types.String           { return m.PPPoEAC }
+func modelGetPPPoEKeepAlive(m model) types.String    { return m.PPPoEKeepAlive }
+func modelGetPPPoEPassword(m model) types.String     { return m.PPPoEPassword }
+func modelGetPPPoEService(m model) types.String      { return m.PPPoEService }
+func modelGetPPPoEUsername(m model) types.String     { return m.PPPoEUsername }
 func modelGetProtocol(m model) types.String          { return m.Protocol }
 func modelGetRequestingAddress(m model) types.String { return m.RequestingAddress }
 func modelGetRequestingPrefix(m model) types.String  { return m.RequestingPrefix }
 
-func modelSetMetric(m *model, value types.Int64)             { m.Metric = value }
 func modelSetBringUpOnBoot(m *model, value types.Bool)       { m.BringUpOnBoot = value }
 func modelSetDevice(m *model, value types.String)            { m.Device = value }
 func modelSetDisabled(m *model, value types.Bool)            { m.Disabled = value }
@@ -385,9 +491,15 @@ func modelSetId(m *model, value types.String)                { m.Id = value }
 func modelSetIP6Assign(m *model, value types.Int64)          { m.IP6Assign = value }
 func modelSetIPAddress(m *model, value types.String)         { m.IPAddress = value }
 func modelSetMacAddress(m *model, value types.String)        { m.MacAddress = value }
+func modelSetMetric(m *model, value types.Int64)             { m.Metric = value }
 func modelSetMTU(m *model, value types.Int64)                { m.MTU = value }
 func modelSetNetmask(m *model, value types.String)           { m.Netmask = value }
 func modelSetPeerDNS(m *model, value types.Bool)             { m.PeerDNS = value }
+func modelSetPPPoEAC(m *model, value types.String)           { m.PPPoEAC = value }
+func modelSetPPPoEKeepAlive(m *model, value types.String)    { m.PPPoEKeepAlive = value }
+func modelSetPPPoEPassword(m *model, value types.String)     { m.PPPoEPassword = value }
+func modelSetPPPoEService(m *model, value types.String)      { m.PPPoEService = value }
+func modelSetPPPoEUsername(m *model, value types.String)     { m.PPPoEUsername = value }
 func modelSetProtocol(m *model, value types.String)          { m.Protocol = value }
 func modelSetRequestingAddress(m *model, value types.String) { m.RequestingAddress = value }
 func modelSetRequestingPrefix(m *model, value types.String)  { m.RequestingPrefix = value }
