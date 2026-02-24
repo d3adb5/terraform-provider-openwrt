@@ -22,18 +22,18 @@ Firewall redirect (port forwarding / NAT) configuration.
 
 ### Optional
 
-- `dest` (String) Destination zone for the redirect.
-- `dest_ip` (String) Destination IP address to redirect matching traffic to.
-- `dest_port` (String) Destination port to redirect matching traffic to (e.g. "80" or "8080-8090").
+- `dest` (String) Destination zone the traffic is forwarded into (e.g. "lan"). If omitted, matches any destination zone.
+- `dest_ip` (String) Internal IP address to forward matching traffic to (the LAN-side server). Required for DNAT to be useful.
+- `dest_port` (String) Internal port to forward matching traffic to (the LAN-side port, e.g. "80"). If omitted, the same port as src_dport is used.
 - `enabled` (Boolean) Enable or disable this redirect.
 - `family` (String) Protocol family to match (ipv4, ipv6, any).
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
 - `proto` (List of String) List of protocols to match (e.g. ["tcp"], ["udp"], ["tcp", "udp"]).
 - `reflection` (Boolean) Enable NAT reflection (hairpin NAT) so LAN clients can reach forwarded ports via the WAN IP.
-- `src` (String) Source zone for the redirect.
-- `src_dip` (String) Match traffic whose original destination IP matches this address (before DNAT).
-- `src_dport` (String) Match incoming destination port(s) on the source zone interface (e.g. "80" or "8080-8090").
-- `src_ip` (String) Match traffic from this source IP address or CIDR range.
+- `src` (String) Source zone where traffic originates (e.g. "wan"). If omitted, matches traffic from any zone.
+- `src_dip` (String) Match traffic whose pre-DNAT destination IP equals this address (i.e. the WAN/external IP the client connected to). Useful when a host has multiple WAN IPs.
+- `src_dport` (String) External port (or range) to match on the source zone interface — the port the outside client connects to (e.g. "8080" or "8080-8090").
+- `src_ip` (String) Match traffic from this source (client) IP address or CIDR range.
 - `src_mac` (String) Match traffic from this source MAC address.
 
 
