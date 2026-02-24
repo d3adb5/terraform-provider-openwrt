@@ -17,11 +17,11 @@ import (
 
 const (
 	modeAttribute            = "mode"
-	modeAttributeDescription = "Specifies the wired ports to attach to this bridge."
+	modeAttributeDescription = "Operating mode for a macvlan device (e.g. vepa, bridge, private, passthru)."
 	modeUCIOption            = "mode"
 
 	ifnameAttribute            = "ifname"
-	ifnameAttributeDescription = "Specifies the wired ports to attach to this bridge."
+	ifnameAttributeDescription = "Base L2 device to create the macvlan on."
 	ifnameUCIOption            = "ifname"
 
 	bridgePortsAttribute            = "ports"
@@ -63,7 +63,7 @@ const (
 	txQueueLengthUCIOption            = "txqueuelen"
 
 	typeAttribute            = "type"
-	typeAttributeDescription = `The type of device. Currently, only "bridge" is supported.`
+	typeAttributeDescription = `The type of device. Supported values: "bridge", "macvlan". Omit for plain device configuration (e.g. overriding macaddr on an existing interface).`
 	typeBridge               = "bridge"
 	typeMacVlan              = "macvlan"
 	typeUCIOption            = "type"
@@ -76,7 +76,7 @@ var (
 	modeSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       modeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetMode, modeAttribute, modeUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetMode, modeAttribute, modeUCIOption),
 		Validators: []validator.String{
 			lucirpcglue.RequiresAttributeEqualString(
@@ -89,7 +89,7 @@ var (
 	ifnameSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       ifnameAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetIfname, ifnameAttribute, ifnameUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetIfname, ifnameAttribute, ifnameUCIOption),
 		Validators: []validator.String{
 			lucirpcglue.RequiresAttributeEqualString(
@@ -102,7 +102,7 @@ var (
 	bridgePortsSchemaAttribute = lucirpcglue.SetStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       bridgePortsAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionSetString(modelSetBridgePorts, bridgePortsAttribute, bridgePortsUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionSetString(modelGetBridgePorts, bridgePortsAttribute, bridgePortsUCIOption),
 		Validators: []validator.Set{
 			setvalidator.SizeAtLeast(1),
@@ -116,7 +116,7 @@ var (
 	bringUpEmptyBridgeSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       bringUpEmptyBridgeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetBringUpEmptyBridge, bringUpEmptyBridgeAttribute, bringUpEmptyBridgeUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetBringUpEmptyBridge, bringUpEmptyBridgeAttribute, bringUpEmptyBridgeUCIOption),
 		Validators: []validator.Bool{
 			lucirpcglue.RequiresAttributeEqualString(
@@ -129,7 +129,7 @@ var (
 	dadTransmitsSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       dadTransmitsAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetDADTransmits, dadTransmitsAttribute, dadTransmitsUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetDADTransmits, dadTransmitsAttribute, dadTransmitsUCIOption),
 		Validators: []validator.Int64{
 			int64validator.AtLeast(1),
@@ -143,14 +143,14 @@ var (
 	enableIPv6SchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       enableIPv6AttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetEnableIPv6, enableIPv6Attribute, enableIPv6UCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetEnableIPv6, enableIPv6Attribute, enableIPv6UCIOption),
 	}
 
 	macAddressSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       macAddressAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetMacAddress, macAddressAttribute, macAddressUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetMacAddress, macAddressAttribute, macAddressUCIOption),
 		Validators: []validator.String{
 			stringvalidator.RegexMatches(
@@ -163,7 +163,7 @@ var (
 	mtuSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       mtuAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetMTU, mtuAttribute, mtuUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetMTU, mtuAttribute, mtuUCIOption),
 		Validators: []validator.Int64{
 			int64validator.Between(576, 9200),
@@ -173,7 +173,7 @@ var (
 	mtu6SchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       mtu6AttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetMTU6, mtu6Attribute, mtu6UCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetMTU6, mtu6Attribute, mtu6UCIOption),
 		Validators: []validator.Int64{
 			int64validator.Between(576, 9200),
@@ -210,7 +210,7 @@ var (
 	txQueueLengthSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       txQueueLengthAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetTXQueueLength, txQueueLengthAttribute, txQueueLengthUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetTXQueueLength, txQueueLengthAttribute, txQueueLengthUCIOption),
 		Validators: []validator.Int64{
 			int64validator.AtLeast(1),
@@ -220,7 +220,7 @@ var (
 	typeSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       typeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetType, typeAttribute, typeUCIOption),
-		ResourceExistence: lucirpcglue.Required,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetType, typeAttribute, typeUCIOption),
 		Validators: []validator.String{
 			stringvalidator.OneOf(

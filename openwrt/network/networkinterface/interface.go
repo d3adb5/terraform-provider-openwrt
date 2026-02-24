@@ -49,7 +49,7 @@ const (
 	macAddressUCIOption            = "macaddr"
 
 	metricAttribute            = "metric"
-	metricAttributeDescription = "Override the default MTU on this interface."
+	metricAttributeDescription = "Route metric for this interface. Lower values are preferred."
 	metricUCIOption            = "metric"
 
 	mtuAttribute            = "mtu"
@@ -96,7 +96,7 @@ var (
 	bringUpOnBootSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       bringUpOnBootAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetBringUpOnBoot, bringUpOnBootAttribute, bringUpOnBootUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetBringUpOnBoot, bringUpOnBootAttribute, bringUpOnBootUCIOption),
 	}
 
@@ -110,14 +110,14 @@ var (
 	disabledSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       disabledAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetDisabled, disabledAttribute, disabledUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetDisabled, disabledAttribute, disabledUCIOption),
 	}
 
 	dnsSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       dnsAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetDNS, dnsAttribute, dnsUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetDNS, dnsAttribute, dnsUCIOption),
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -141,11 +141,11 @@ var (
 	gatewaySchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       gatewayAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetGateway, gatewayAttribute, gatewayUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetGateway, gatewayAttribute, gatewayUCIOption),
 		Validators: []validator.String{
 			stringvalidator.RegexMatches(
-				regexp.MustCompile("^([[:digit:]]{1,3}.){3}[[:digit:]]{1,3}$"),
+				regexp.MustCompile(`^([[:digit:]]{1,3}\.){3}[[:digit:]]{1,3}$`),
 				`must be a valid gateway (e.g. "192.168.1.1")`,
 			),
 			lucirpcglue.RequiresAttributeEqualString(
@@ -158,7 +158,7 @@ var (
 	ip6AssignSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       ip6AssignAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetIP6Assign, ip6AssignAttribute, ip6AssignUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetIP6Assign, ip6AssignAttribute, ip6AssignUCIOption),
 		Validators: []validator.Int64{
 			int64validator.Between(0, 64),
@@ -172,11 +172,11 @@ var (
 	ipAddressSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       ipAddressAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetIPAddress, ipAddressAttribute, ipAddressUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetIPAddress, ipAddressAttribute, ipAddressUCIOption),
 		Validators: []validator.String{
 			stringvalidator.RegexMatches(
-				regexp.MustCompile("^([[:digit:]]{1,3}.){3}[[:digit:]]{1,3}$"),
+				regexp.MustCompile(`^([[:digit:]]{1,3}\.){3}[[:digit:]]{1,3}$`),
 				`must be a valid IP address (e.g. "192.168.3.1")`,
 			),
 		},
@@ -185,7 +185,7 @@ var (
 	macAddressSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       macAddressAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetMacAddress, macAddressAttribute, macAddressUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetMacAddress, macAddressAttribute, macAddressUCIOption),
 		Validators: []validator.String{
 			stringvalidator.RegexMatches(
@@ -198,7 +198,7 @@ var (
 	metricSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       metricAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetMetric, metricAttribute, metricUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetMetric, metricAttribute, metricUCIOption),
 		Validators: []validator.Int64{
 			int64validator.Between(0, 4294967295),
@@ -208,7 +208,7 @@ var (
 	mtuSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       mtuAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetMTU, mtuAttribute, mtuUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetMTU, mtuAttribute, mtuUCIOption),
 		Validators: []validator.Int64{
 			int64validator.Between(576, 9200),
@@ -218,11 +218,11 @@ var (
 	netmaskSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       netmaskAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetNetmask, netmaskAttribute, netmaskUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetNetmask, netmaskAttribute, netmaskUCIOption),
 		Validators: []validator.String{
 			stringvalidator.RegexMatches(
-				regexp.MustCompile("^([[:digit:]]{1,3}.){3}[[:digit:]]{1,3}$"),
+				regexp.MustCompile(`^([[:digit:]]{1,3}\.){3}[[:digit:]]{1,3}$`),
 				`must be a valid netmask (e.g. "255.255.255.0")`,
 			),
 			lucirpcglue.RequiresAttributeEqualString(
@@ -235,7 +235,7 @@ var (
 	peerDNSSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       peerDNSAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetPeerDNS, peerDNSAttribute, peerDNSUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetPeerDNS, peerDNSAttribute, peerDNSUCIOption),
 		Validators: []validator.Bool{
 			lucirpcglue.AnyBool(
@@ -268,7 +268,7 @@ var (
 	requestingAddressSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       requestingAddressAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetRequestingAddress, requestingAddressAttribute, requestingAddressUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetRequestingAddress, requestingAddressAttribute, requestingAddressUCIOption),
 		Validators: []validator.String{
 			stringvalidator.OneOf(
@@ -286,7 +286,7 @@ var (
 	requestingPrefixSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       requestingPrefixAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetRequestingPrefix, requestingPrefixAttribute, requestingPrefixUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetRequestingPrefix, requestingPrefixAttribute, requestingPrefixUCIOption),
 		Validators: []validator.String{
 			stringvalidator.OneOf(

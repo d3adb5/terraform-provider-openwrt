@@ -29,15 +29,15 @@ data "openwrt_network_device" "br_testing" {
 
 - `bridge_empty` (Boolean) Bring up the bridge device even if no ports are attached
 - `dadtransmits` (Number) Amount of Duplicate Address Detection probes to send
-- `ifname` (String) Specifies the wired ports to attach to this bridge.
+- `ifname` (String) Base L2 device to create the macvlan on.
 - `ipv6` (Boolean) Enable IPv6 for the device.
 - `macaddr` (String) MAC Address of the device.
-- `mode` (String) Specifies the wired ports to attach to this bridge.
+- `mode` (String) Operating mode for a macvlan device (e.g. vepa, bridge, private, passthru).
 - `mtu` (Number) Maximum Transmissible Unit.
 - `mtu6` (Number) Maximum Transmissible Unit for IPv6.
 - `name` (String) Name of the device. This name is referenced in other network configuration.
 - `ports` (Set of String) Specifies the wired ports to attach to this bridge.
 - `txqueuelen` (Number) Transmission queue length.
-- `type` (String) The type of device. Currently, only "bridge" is supported.
+- `type` (String) The type of device. Supported values: "bridge", "macvlan". Omit for plain device configuration (e.g. overriding macaddr on an existing interface).
 
 

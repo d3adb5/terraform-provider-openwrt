@@ -5,6 +5,7 @@ package networkinterface_test
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -12,6 +13,73 @@ import (
 	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
 	"gotest.tools/v3/assert"
 )
+
+func TestResourceInvalidIPValidationAcceptance(t *testing.T) {
+	ctx := context.Background()
+	openWrtServer := acceptancetest.RunOpenWrtServer(
+		ctx,
+		*dockerPool,
+		t,
+	)
+	providerBlock := openWrtServer.ProviderBlock()
+
+	invalidIPAddr := resource.TestStep{
+		Config: fmt.Sprintf(`
+%s
+
+resource "openwrt_network_interface" "testing" {
+	device  = "eth0"
+	id      = "testing"
+	ipaddr  = "192x168x1x1"
+	netmask = "255.255.255.0"
+	proto   = "static"
+}
+`,
+			providerBlock,
+		),
+		ExpectError: regexp.MustCompile(`must be a valid IP address`),
+	}
+	invalidNetmask := resource.TestStep{
+		Config: fmt.Sprintf(`
+%s
+
+resource "openwrt_network_interface" "testing" {
+	device  = "eth0"
+	id      = "testing"
+	ipaddr  = "192.168.1.1"
+	netmask = "255x255x255x0"
+	proto   = "static"
+}
+`,
+			providerBlock,
+		),
+		ExpectError: regexp.MustCompile(`must be a valid netmask`),
+	}
+	invalidGateway := resource.TestStep{
+		Config: fmt.Sprintf(`
+%s
+
+resource "openwrt_network_interface" "testing" {
+	device  = "eth0"
+	gateway = "192x168x1x1"
+	id      = "testing"
+	ipaddr  = "192.168.1.1"
+	netmask = "255.255.255.0"
+	proto   = "static"
+}
+`,
+			providerBlock,
+		),
+		ExpectError: regexp.MustCompile(`must be a valid gateway`),
+	}
+
+	acceptancetest.TerraformSteps(
+		t,
+		invalidIPAddr,
+		invalidNetmask,
+		invalidGateway,
+	)
+}
 
 func TestDataSourceAcceptance(t *testing.T) {
 	ctx := context.Background()

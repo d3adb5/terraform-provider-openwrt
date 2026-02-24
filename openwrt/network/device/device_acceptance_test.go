@@ -59,6 +59,47 @@ data "openwrt_network_device" "this" {
 	)
 }
 
+func TestResourcePlainDeviceAcceptance(t *testing.T) {
+	ctx := context.Background()
+	openWrtServer := acceptancetest.RunOpenWrtServer(
+		ctx,
+		*dockerPool,
+		t,
+	)
+	providerBlock := openWrtServer.ProviderBlock()
+
+	createAndReadResource := resource.TestStep{
+		Config: fmt.Sprintf(`
+%s
+
+resource "openwrt_network_device" "testing" {
+	id      = "testing"
+	macaddr = "12:34:56:78:90:ab"
+	name    = "eth0"
+}
+`,
+			providerBlock,
+		),
+		Check: resource.ComposeAggregateTestCheckFunc(
+			resource.TestCheckResourceAttr("openwrt_network_device.testing", "id", "testing"),
+			resource.TestCheckResourceAttr("openwrt_network_device.testing", "macaddr", "12:34:56:78:90:ab"),
+			resource.TestCheckResourceAttr("openwrt_network_device.testing", "name", "eth0"),
+			resource.TestCheckNoResourceAttr("openwrt_network_device.testing", "type"),
+		),
+	}
+	importValidation := resource.TestStep{
+		ImportState:       true,
+		ImportStateVerify: true,
+		ResourceName:      "openwrt_network_device.testing",
+	}
+
+	acceptancetest.TerraformSteps(
+		t,
+		createAndReadResource,
+		importValidation,
+	)
+}
+
 func TestResourceAcceptance(t *testing.T) {
 	ctx := context.Background()
 	openWrtServer := acceptancetest.RunOpenWrtServer(
