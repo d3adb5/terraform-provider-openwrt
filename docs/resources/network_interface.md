@@ -53,8 +53,15 @@ resource "openwrt_network_interface" "testing" {
 - `dns` (List of String) DNS servers
 - `gateway` (String) Gateway of the interface
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
+- `ip6addr` (String) Static IPv6 address of the interface in CIDR notation (e.g. "2001:db8::1/64").
 - `ip6assign` (Number) Delegate a prefix of given length to this interface
+- `ip6class` (String) Accept only the given class of IPv6 prefixes from upstream (e.g. "wan6").
+- `ip6gw` (String) IPv6 default gateway of the interface (e.g. "2001:db8::1").
+- `ip6hint` (String) Subprefix ID hint for prefix delegation, in hexadecimal (e.g. "1").
+- `ip6ifaceid` (String) IPv6 interface identifier suffix. Accepted values: "eui64", "random", or a fixed suffix like "::1".
+- `ip6prefix` (String) IPv6 prefix for distribution to downstream interfaces, in CIDR notation (e.g. "2001:db8:1::/48").
 - `ipaddr` (String) IP address of the interface
+- `ipv6` (Boolean) Enable or disable IPv6 on this interface.
 - `keepalive` (String) LCP echo keepalive configuration in the format "failures interval" (e.g. "5 15" means 5 failures with 15 second interval). PPPoE only.
 - `macaddr` (String) Override the MAC Address of this interface.
 - `metric` (Number) Route metric for this interface. Lower values are preferred.

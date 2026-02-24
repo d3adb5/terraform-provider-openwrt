@@ -36,13 +36,41 @@ const (
 	gatewayAttributeDescription = "Gateway of the interface"
 	gatewayUCIOption            = "gateway"
 
+	ip6AddressAttribute            = "ip6addr"
+	ip6AddressAttributeDescription = `Static IPv6 address of the interface in CIDR notation (e.g. "2001:db8::1/64").`
+	ip6AddressUCIOption            = "ip6addr"
+
 	ip6AssignAttribute            = "ip6assign"
 	ip6AssignAttributeDescription = "Delegate a prefix of given length to this interface"
 	ip6AssignUCIOption            = "ip6assign"
 
+	ip6ClassAttribute            = "ip6class"
+	ip6ClassAttributeDescription = `Accept only the given class of IPv6 prefixes from upstream (e.g. "wan6").`
+	ip6ClassUCIOption            = "ip6class"
+
+	ip6GatewayAttribute            = "ip6gw"
+	ip6GatewayAttributeDescription = `IPv6 default gateway of the interface (e.g. "2001:db8::1").`
+	ip6GatewayUCIOption            = "ip6gw"
+
+	ip6HintAttribute            = "ip6hint"
+	ip6HintAttributeDescription = "Subprefix ID hint for prefix delegation, in hexadecimal (e.g. \"1\")."
+	ip6HintUCIOption            = "ip6hint"
+
+	ip6IfaceIDAttribute            = "ip6ifaceid"
+	ip6IfaceIDAttributeDescription = `IPv6 interface identifier suffix. Accepted values: "eui64", "random", or a fixed suffix like "::1".`
+	ip6IfaceIDUCIOption            = "ip6ifaceid"
+
+	ip6PrefixAttribute            = "ip6prefix"
+	ip6PrefixAttributeDescription = `IPv6 prefix for distribution to downstream interfaces, in CIDR notation (e.g. "2001:db8:1::/48").`
+	ip6PrefixUCIOption            = "ip6prefix"
+
 	ipAddressAttribute            = "ipaddr"
 	ipAddressAttributeDescription = "IP address of the interface"
 	ipAddressUCIOption            = "ipaddr"
+
+	ipv6Attribute            = "ipv6"
+	ipv6AttributeDescription = "Enable or disable IPv6 on this interface."
+	ipv6UCIOption            = "ipv6"
 
 	macAddressAttribute            = "macaddr"
 	macAddressAttributeDescription = "Override the MAC Address of this interface."
@@ -176,6 +204,19 @@ var (
 		},
 	}
 
+	ip6AddressSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       ip6AddressAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetIP6Address, ip6AddressAttribute, ip6AddressUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetIP6Address, ip6AddressAttribute, ip6AddressUCIOption),
+		Validators: []validator.String{
+			stringvalidator.RegexMatches(
+				regexp.MustCompile(`^[0-9a-fA-F:]+/\d{1,3}$`),
+				`must be a valid IPv6 CIDR address (e.g. "2001:db8::1/64")`,
+			),
+		},
+	}
+
 	ip6AssignSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       ip6AssignAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetIP6Assign, ip6AssignAttribute, ip6AssignUCIOption),
@@ -186,6 +227,65 @@ var (
 			lucirpcglue.RequiresAttributeEqualString(
 				path.MatchRoot(protocolAttribute),
 				protocolStatic,
+			),
+		},
+	}
+
+	ip6ClassSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       ip6ClassAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetIP6Class, ip6ClassAttribute, ip6ClassUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetIP6Class, ip6ClassAttribute, ip6ClassUCIOption),
+	}
+
+	ip6GatewaySchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       ip6GatewayAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetIP6Gateway, ip6GatewayAttribute, ip6GatewayUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetIP6Gateway, ip6GatewayAttribute, ip6GatewayUCIOption),
+		Validators: []validator.String{
+			stringvalidator.RegexMatches(
+				regexp.MustCompile(`^[0-9a-fA-F:]+$`),
+				`must be a valid IPv6 address (e.g. "2001:db8::1")`,
+			),
+		},
+	}
+
+	ip6HintSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       ip6HintAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetIP6Hint, ip6HintAttribute, ip6HintUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetIP6Hint, ip6HintAttribute, ip6HintUCIOption),
+		Validators: []validator.String{
+			stringvalidator.RegexMatches(
+				regexp.MustCompile(`^[0-9a-fA-F]+$`),
+				`must be a hexadecimal value (e.g. "1" or "a3")`,
+			),
+		},
+	}
+
+	ip6IfaceIDSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       ip6IfaceIDAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetIP6IfaceID, ip6IfaceIDAttribute, ip6IfaceIDUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetIP6IfaceID, ip6IfaceIDAttribute, ip6IfaceIDUCIOption),
+		Validators: []validator.String{
+			stringvalidator.RegexMatches(
+				regexp.MustCompile(`^(eui64|random|::[0-9a-fA-F:]+)$`),
+				`must be "eui64", "random", or a fixed IPv6 suffix (e.g. "::1")`,
+			),
+		},
+	}
+
+	ip6PrefixSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       ip6PrefixAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetIP6Prefix, ip6PrefixAttribute, ip6PrefixUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetIP6Prefix, ip6PrefixAttribute, ip6PrefixUCIOption),
+		Validators: []validator.String{
+			stringvalidator.RegexMatches(
+				regexp.MustCompile(`^[0-9a-fA-F:]+/\d{1,3}$`),
+				`must be a valid IPv6 CIDR prefix (e.g. "2001:db8:1::/48")`,
 			),
 		},
 	}
@@ -201,6 +301,13 @@ var (
 				`must be a valid IP address (e.g. "192.168.3.1")`,
 			),
 		},
+	}
+
+	ipv6SchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       ipv6AttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetIPv6, ipv6Attribute, ipv6UCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetIPv6, ipv6Attribute, ipv6UCIOption),
 	}
 
 	macAddressSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -397,8 +504,15 @@ var (
 		disabledAttribute:          disabledSchemaAttribute,
 		dnsAttribute:               dnsSchemaAttribute,
 		gatewayAttribute:           gatewaySchemaAttribute,
+		ip6AddressAttribute:        ip6AddressSchemaAttribute,
 		ip6AssignAttribute:         ip6AssignSchemaAttribute,
+		ip6ClassAttribute:          ip6ClassSchemaAttribute,
+		ip6GatewayAttribute:        ip6GatewaySchemaAttribute,
+		ip6HintAttribute:           ip6HintSchemaAttribute,
+		ip6IfaceIDAttribute:        ip6IfaceIDSchemaAttribute,
+		ip6PrefixAttribute:         ip6PrefixSchemaAttribute,
 		ipAddressAttribute:         ipAddressSchemaAttribute,
+		ipv6Attribute:              ipv6SchemaAttribute,
 		macAddressAttribute:        macAddressSchemaAttribute,
 		mtuAttribute:               mtuSchemaAttribute,
 		metricAttribute:            metricSchemaAttribute,
@@ -443,8 +557,15 @@ type model struct {
 	DNS               types.List   `tfsdk:"dns"`
 	Gateway           types.String `tfsdk:"gateway"`
 	Id                types.String `tfsdk:"id"`
+	IP6Address        types.String `tfsdk:"ip6addr"`
 	IP6Assign         types.Int64  `tfsdk:"ip6assign"`
+	IP6Class          types.String `tfsdk:"ip6class"`
+	IP6Gateway        types.String `tfsdk:"ip6gw"`
+	IP6Hint           types.String `tfsdk:"ip6hint"`
+	IP6IfaceID        types.String `tfsdk:"ip6ifaceid"`
+	IP6Prefix         types.String `tfsdk:"ip6prefix"`
 	IPAddress         types.String `tfsdk:"ipaddr"`
+	IPv6              types.Bool   `tfsdk:"ipv6"`
 	MacAddress        types.String `tfsdk:"macaddr"`
 	Metric            types.Int64  `tfsdk:"metric"`
 	MTU               types.Int64  `tfsdk:"mtu"`
@@ -466,8 +587,15 @@ func modelGetDisabled(m model) types.Bool            { return m.Disabled }
 func modelGetDNS(m model) types.List                 { return m.DNS }
 func modelGetGateway(m model) types.String           { return m.Gateway }
 func modelGetId(m model) types.String                { return m.Id }
+func modelGetIP6Address(m model) types.String        { return m.IP6Address }
 func modelGetIP6Assign(m model) types.Int64          { return m.IP6Assign }
+func modelGetIP6Class(m model) types.String          { return m.IP6Class }
+func modelGetIP6Gateway(m model) types.String        { return m.IP6Gateway }
+func modelGetIP6Hint(m model) types.String           { return m.IP6Hint }
+func modelGetIP6IfaceID(m model) types.String        { return m.IP6IfaceID }
+func modelGetIP6Prefix(m model) types.String         { return m.IP6Prefix }
 func modelGetIPAddress(m model) types.String         { return m.IPAddress }
+func modelGetIPv6(m model) types.Bool                { return m.IPv6 }
 func modelGetMacAddress(m model) types.String        { return m.MacAddress }
 func modelGetMetric(m model) types.Int64             { return m.Metric }
 func modelGetMTU(m model) types.Int64                { return m.MTU }
@@ -488,8 +616,15 @@ func modelSetDisabled(m *model, value types.Bool)            { m.Disabled = valu
 func modelSetDNS(m *model, value types.List)                 { m.DNS = value }
 func modelSetGateway(m *model, value types.String)           { m.Gateway = value }
 func modelSetId(m *model, value types.String)                { m.Id = value }
+func modelSetIP6Address(m *model, value types.String)        { m.IP6Address = value }
 func modelSetIP6Assign(m *model, value types.Int64)          { m.IP6Assign = value }
+func modelSetIP6Class(m *model, value types.String)          { m.IP6Class = value }
+func modelSetIP6Gateway(m *model, value types.String)        { m.IP6Gateway = value }
+func modelSetIP6Hint(m *model, value types.String)           { m.IP6Hint = value }
+func modelSetIP6IfaceID(m *model, value types.String)        { m.IP6IfaceID = value }
+func modelSetIP6Prefix(m *model, value types.String)         { m.IP6Prefix = value }
 func modelSetIPAddress(m *model, value types.String)         { m.IPAddress = value }
+func modelSetIPv6(m *model, value types.Bool)                { m.IPv6 = value }
 func modelSetMacAddress(m *model, value types.String)        { m.MacAddress = value }
 func modelSetMetric(m *model, value types.Int64)             { m.Metric = value }
 func modelSetMTU(m *model, value types.Int64)                { m.MTU = value }
