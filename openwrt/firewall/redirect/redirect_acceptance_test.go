@@ -57,7 +57,7 @@ data "openwrt_firewall_redirect" "testing" {
 			resource.TestCheckResourceAttr("data.openwrt_firewall_redirect.testing", "dest", "lan"),
 			resource.TestCheckResourceAttr("data.openwrt_firewall_redirect.testing", "dest_ip", "192.168.1.100"),
 			resource.TestCheckResourceAttr("data.openwrt_firewall_redirect.testing", "dest_port", "80"),
-			resource.TestCheckResourceAttr("data.openwrt_firewall_redirect.testing", "proto", "tcp"),
+			resource.TestCheckResourceAttr("data.openwrt_firewall_redirect.testing", "proto.0", "tcp"),
 			resource.TestCheckResourceAttr("data.openwrt_firewall_redirect.testing", "target", "DNAT"),
 		),
 	}
@@ -89,7 +89,7 @@ resource "openwrt_firewall_redirect" "testing" {
 	dest      = "lan"
 	dest_ip   = "192.168.1.100"
 	dest_port = "80"
-	proto     = "tcp"
+	proto     = ["tcp"]
 	target    = "DNAT"
 }
 `,
@@ -103,7 +103,7 @@ resource "openwrt_firewall_redirect" "testing" {
 			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "dest", "lan"),
 			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "dest_ip", "192.168.1.100"),
 			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "dest_port", "80"),
-			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "proto", "tcp"),
+			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "proto.0", "tcp"),
 			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "target", "DNAT"),
 		),
 	}
@@ -126,7 +126,7 @@ resource "openwrt_firewall_redirect" "testing" {
 	dest       = "lan"
 	dest_ip    = "192.168.1.100"
 	dest_port  = "80"
-	proto      = "tcp"
+	proto      = ["tcp"]
 	target     = "DNAT"
 	reflection = true
 }
@@ -141,7 +141,7 @@ resource "openwrt_firewall_redirect" "testing" {
 			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "dest", "lan"),
 			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "dest_ip", "192.168.1.100"),
 			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "dest_port", "80"),
-			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "proto", "tcp"),
+			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "proto.0", "tcp"),
 			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "target", "DNAT"),
 			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "reflection", "true"),
 		),

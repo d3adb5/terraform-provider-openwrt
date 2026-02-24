@@ -3,12 +3,12 @@
 page_title: "openwrt_firewall_redirect Data Source - openwrt"
 subcategory: ""
 description: |-
-  Firewall redirect configuration.
+  Firewall redirect (port forwarding / NAT) configuration.
 ---
 
 # openwrt_firewall_redirect (Data Source)
 
-Firewall redirect configuration.
+Firewall redirect (port forwarding / NAT) configuration.
 
 
 
@@ -23,16 +23,16 @@ Firewall redirect configuration.
 
 - `dest` (String) Destination zone for the redirect.
 - `dest_ip` (String) Destination IP address to redirect matching traffic to.
-- `dest_port` (String) Destination port to redirect matching traffic to.
+- `dest_port` (String) Destination port to redirect matching traffic to (e.g. "80" or "8080-8090").
 - `enabled` (Boolean) Enable or disable this redirect.
 - `family` (String) Protocol family to match (ipv4, ipv6, any).
 - `name` (String) Name of the redirect.
-- `proto` (String) Protocol to match (e.g. tcp, udp, tcpudp).
+- `proto` (List of String) List of protocols to match (e.g. ["tcp"], ["udp"], ["tcp", "udp"]).
 - `reflection` (Boolean) Enable NAT reflection (hairpin NAT) so LAN clients can reach forwarded ports via the WAN IP.
 - `src` (String) Source zone for the redirect.
 - `src_dip` (String) Match traffic whose original destination IP matches this address (before DNAT).
-- `src_dport` (String) Match incoming destination port(s) on the source zone interface.
-- `src_ip` (String) Match traffic from this source IP address.
+- `src_dport` (String) Match incoming destination port(s) on the source zone interface (e.g. "80" or "8080-8090").
+- `src_ip` (String) Match traffic from this source IP address or CIDR range.
 - `src_mac` (String) Match traffic from this source MAC address.
 - `target` (String) NAT action to perform (DNAT for port forwarding, SNAT for source NAT).
 
