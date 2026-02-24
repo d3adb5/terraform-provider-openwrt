@@ -168,7 +168,7 @@ var (
 	protoSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       protoAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetProto, protoAttribute, protoUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.Required,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetProto, protoAttribute, protoUCIOption),
 		Validators:        []validator.List{listvalidator.ValueStringsAre(protoValidators...)},
 	}

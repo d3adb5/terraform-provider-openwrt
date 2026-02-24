@@ -18,6 +18,7 @@ Firewall redirect (port forwarding / NAT) configuration.
 ### Required
 
 - `name` (String) Name of the redirect.
+- `proto` (List of String) List of protocols to match (e.g. ["tcp"], ["udp"], ["tcp", "udp"]).
 - `target` (String) NAT action to perform (DNAT for port forwarding, SNAT for source NAT).
 
 ### Optional
@@ -28,7 +29,6 @@ Firewall redirect (port forwarding / NAT) configuration.
 - `enabled` (Boolean) Enable or disable this redirect.
 - `family` (String) Protocol family to match (ipv4, ipv6, any).
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
-- `proto` (List of String) List of protocols to match (e.g. ["tcp"], ["udp"], ["tcp", "udp"]).
 - `reflection` (Boolean) Enable NAT reflection (hairpin NAT) so LAN clients can reach forwarded ports via the WAN IP.
 - `src` (String) Source zone where traffic originates (e.g. "wan"). If omitted, matches traffic from any zone.
 - `src_dip` (String) Match traffic whose pre-DNAT destination IP equals this address (i.e. the WAN/external IP the client connected to). Useful when a host has multiple WAN IPs.
