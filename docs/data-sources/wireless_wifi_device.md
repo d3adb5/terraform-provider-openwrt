@@ -28,11 +28,14 @@ data "openwrt_wireless_wifi_device" "testing" {
 ### Read-Only
 
 - `band` (String) Channel width. Must be one of: "2g", "5g", "6g".
+- `beacon_int` (Number) Beacon interval in milliseconds.
 - `cell_density` (Number) Configures data rates based on the coverage cell density. Must be one of 0, 1, 2, 3.
 - `channel` (String) The wireless channel. Currently, only "auto" is supported.
 - `country` (String) Two-digit country code. E.g. "US".
+- `disabled` (Boolean) Disables this radio.
 - `htmode` (String) Channel width. Must be one of: "HE20", "HE40", "HE80", "HE160", "HT20", "HT40", "HT40-", "HT40+", "NONE", "VHT20", "VHT40", "VHT80", "VHT160".
 - `path` (String) Path of the device in `/sys/devices`.
+- `txpower` (Number) Transmit power in dBm.
 - `type` (String) The type of device. Currently only "mac80211" is supported.
 
 

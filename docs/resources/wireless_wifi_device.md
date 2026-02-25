@@ -32,11 +32,14 @@ resource "openwrt_wireless_wifi_device" "five_ghz" {
 ### Optional
 
 - `band` (String) Channel width. Must be one of: "2g", "5g", "6g".
+- `beacon_int` (Number) Beacon interval in milliseconds.
 - `cell_density` (Number) Configures data rates based on the coverage cell density. Must be one of 0, 1, 2, 3.
 - `country` (String) Two-digit country code. E.g. "US".
+- `disabled` (Boolean) Disables this radio.
 - `htmode` (String) Channel width. Must be one of: "HE20", "HE40", "HE80", "HE160", "HT20", "HT40", "HT40-", "HT40+", "NONE", "VHT20", "VHT40", "VHT80", "VHT160".
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
 - `path` (String) Path of the device in `/sys/devices`.
+- `txpower` (Number) Transmit power in dBm.
 
 ## Import
 

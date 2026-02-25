@@ -19,6 +19,10 @@ const (
 	band6G                   = "6g"
 	bandUCIOption            = "band"
 
+	beaconIntervalAttribute            = "beacon_int"
+	beaconIntervalAttributeDescription = "Beacon interval in milliseconds."
+	beaconIntervalUCIOption            = "beacon_int"
+
 	cellDensityAttribute            = "cell_density"
 	cellDensityAttributeDescription = "Configures data rates based on the coverage cell density. Must be one of 0, 1, 2, 3."
 	cellDensityDisabled             = 0
@@ -26,6 +30,10 @@ const (
 	cellDensityNormal               = 1
 	cellDensityUCIOption            = "cell_density"
 	cellDensityVeryHigh             = 3
+
+	disabledAttribute            = "disabled"
+	disabledAttributeDescription = "Disables this radio."
+	disabledUCIOption            = "disabled"
 
 	channelAttribute            = "channel"
 	channelAttributeDescription = `The wireless channel. Currently, only "auto" is supported.`
@@ -59,6 +67,10 @@ const (
 
 	schemaDescription = "The physical radio device."
 
+	txPowerAttribute            = "txpower"
+	txPowerAttributeDescription = "Transmit power in dBm."
+	txPowerUCIOption            = "txpower"
+
 	typeAttribute            = "type"
 	typeAttributeDescription = `The type of device. Currently only "mac80211" is supported.`
 	typeMac80211             = "mac80211"
@@ -72,7 +84,7 @@ var (
 	bandSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       bandAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetBand, bandAttribute, bandUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetBand, bandAttribute, bandUCIOption),
 		Validators: []validator.String{
 			stringvalidator.OneOf(
@@ -83,10 +95,20 @@ var (
 		},
 	}
 
+	beaconIntervalSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       beaconIntervalAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetBeaconInterval, beaconIntervalAttribute, beaconIntervalUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetBeaconInterval, beaconIntervalAttribute, beaconIntervalUCIOption),
+		Validators: []validator.Int64{
+			int64validator.Between(15, 65535),
+		},
+	}
+
 	cellDensitySchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       cellDensityAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetCellDensity, cellDensityAttribute, cellDensityUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetCellDensity, cellDensityAttribute, cellDensityUCIOption),
 		Validators: []validator.Int64{
 			int64validator.OneOf(
@@ -113,17 +135,24 @@ var (
 	countryCodeSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       countryCodeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetCountryCode, countryCodeAttribute, countryCodeUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetCountryCode, countryCodeAttribute, countryCodeUCIOption),
 		Validators: []validator.String{
 			stringvalidator.LengthBetween(2, 2),
 		},
 	}
 
+	disabledSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       disabledAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetDisabled, disabledAttribute, disabledUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetDisabled, disabledAttribute, disabledUCIOption),
+	}
+
 	htModeSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       htModeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetHTMode, htModeAttribute, htModeUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetHTMode, htModeAttribute, htModeUCIOption),
 		Validators: []validator.String{
 			stringvalidator.OneOf(
@@ -147,19 +176,32 @@ var (
 	pathSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       pathAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetPath, pathAttribute, pathUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetPath, pathAttribute, pathUCIOption),
 	}
 
 	schemaAttributes = map[string]lucirpcglue.SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		bandAttribute:           bandSchemaAttribute,
+		beaconIntervalAttribute: beaconIntervalSchemaAttribute,
 		cellDensityAttribute:    cellDensitySchemaAttribute,
 		channelAttribute:        channelSchemaAttribute,
 		countryCodeAttribute:    countryCodeSchemaAttribute,
+		disabledAttribute:       disabledSchemaAttribute,
 		lucirpcglue.IdAttribute: lucirpcglue.IdSchemaAttribute(modelGetId, modelSetId),
 		htModeAttribute:         htModeSchemaAttribute,
 		pathAttribute:           pathSchemaAttribute,
+		txPowerAttribute:        txPowerSchemaAttribute,
 		typeAttribute:           typeSchemaAttribute,
+	}
+
+	txPowerSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       txPowerAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetTXPower, txPowerAttribute, txPowerUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetTXPower, txPowerAttribute, txPowerUCIOption),
+		Validators: []validator.Int64{
+			int64validator.Between(0, 30),
+		},
 	}
 
 	typeSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -196,30 +238,39 @@ func NewResource() resource.Resource {
 }
 
 type model struct {
-	Band        types.String `tfsdk:"band"`
-	CellDensity types.Int64  `tfsdk:"cell_density"`
-	Channel     types.String `tfsdk:"channel"`
-	CountryCode types.String `tfsdk:"country"`
-	HTMode      types.String `tfsdk:"htmode"`
-	Id          types.String `tfsdk:"id"`
-	Path        types.String `tfsdk:"path"`
-	Type        types.String `tfsdk:"type"`
+	Band           types.String `tfsdk:"band"`
+	BeaconInterval types.Int64  `tfsdk:"beacon_int"`
+	CellDensity    types.Int64  `tfsdk:"cell_density"`
+	Channel        types.String `tfsdk:"channel"`
+	CountryCode    types.String `tfsdk:"country"`
+	Disabled       types.Bool   `tfsdk:"disabled"`
+	HTMode         types.String `tfsdk:"htmode"`
+	Id             types.String `tfsdk:"id"`
+	Path           types.String `tfsdk:"path"`
+	TXPower        types.Int64  `tfsdk:"txpower"`
+	Type           types.String `tfsdk:"type"`
 }
 
-func modelGetBand(m model) types.String        { return m.Band }
-func modelGetCellDensity(m model) types.Int64  { return m.CellDensity }
-func modelGetChannel(m model) types.String     { return m.Channel }
-func modelGetCountryCode(m model) types.String { return m.CountryCode }
-func modelGetHTMode(m model) types.String      { return m.HTMode }
-func modelGetId(m model) types.String          { return m.Id }
-func modelGetPath(m model) types.String        { return m.Path }
-func modelGetType(m model) types.String        { return m.Type }
+func modelGetBand(m model) types.String           { return m.Band }
+func modelGetBeaconInterval(m model) types.Int64  { return m.BeaconInterval }
+func modelGetCellDensity(m model) types.Int64     { return m.CellDensity }
+func modelGetChannel(m model) types.String        { return m.Channel }
+func modelGetCountryCode(m model) types.String    { return m.CountryCode }
+func modelGetDisabled(m model) types.Bool         { return m.Disabled }
+func modelGetHTMode(m model) types.String         { return m.HTMode }
+func modelGetId(m model) types.String             { return m.Id }
+func modelGetPath(m model) types.String           { return m.Path }
+func modelGetTXPower(m model) types.Int64         { return m.TXPower }
+func modelGetType(m model) types.String           { return m.Type }
 
-func modelSetBand(m *model, value types.String)        { m.Band = value }
-func modelSetCellDensity(m *model, value types.Int64)  { m.CellDensity = value }
-func modelSetChannel(m *model, value types.String)     { m.Channel = value }
-func modelSetCountryCode(m *model, value types.String) { m.CountryCode = value }
-func modelSetHTMode(m *model, value types.String)      { m.HTMode = value }
-func modelSetId(m *model, value types.String)          { m.Id = value }
-func modelSetPath(m *model, value types.String)        { m.Path = value }
-func modelSetType(m *model, value types.String)        { m.Type = value }
+func modelSetBand(m *model, value types.String)           { m.Band = value }
+func modelSetBeaconInterval(m *model, value types.Int64)  { m.BeaconInterval = value }
+func modelSetCellDensity(m *model, value types.Int64)     { m.CellDensity = value }
+func modelSetChannel(m *model, value types.String)        { m.Channel = value }
+func modelSetCountryCode(m *model, value types.String)    { m.CountryCode = value }
+func modelSetDisabled(m *model, value types.Bool)         { m.Disabled = value }
+func modelSetHTMode(m *model, value types.String)         { m.HTMode = value }
+func modelSetId(m *model, value types.String)             { m.Id = value }
+func modelSetPath(m *model, value types.String)           { m.Path = value }
+func modelSetTXPower(m *model, value types.Int64)         { m.TXPower = value }
+func modelSetType(m *model, value types.String)           { m.Type = value }
