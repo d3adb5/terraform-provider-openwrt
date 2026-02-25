@@ -310,6 +310,7 @@ var (
 		Description:       usernameAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetUsername, usernameAttribute, usernameUCIOption),
 		ResourceExistence: lucirpcglue.Optional,
+		Sensitive:         true,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetUsername, usernameAttribute, usernameUCIOption),
 	}
 
