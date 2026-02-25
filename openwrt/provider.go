@@ -37,6 +37,7 @@ import (
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/networkswitch"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/switchvlan"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/system/system"
+	"github.com/joneshf/terraform-provider-openwrt/openwrt/system/timeserver"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/wireless/wifidevice"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/wireless/wifiiface"
 )
@@ -190,6 +191,7 @@ func (p *openWrtProvider) DataSources(
 		switchvlan.NewDataSource,
 		rule.NewDataSource,
 		system.NewDataSource,
+		timeserver.NewDataSource,
 		wifidevice.NewDataSource,
 		wifiiface.NewDataSource,
 		zone.NewDataSource,
@@ -230,6 +232,7 @@ func (p *openWrtProvider) Resources(
 		rule.NewResource,
 		switchvlan.NewResource,
 		system.NewResource,
+		timeserver.NewResource,
 		wifidevice.NewResource,
 		wifiiface.NewResource,
 		zone.NewResource,
