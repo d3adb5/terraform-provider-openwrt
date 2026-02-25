@@ -56,10 +56,17 @@ resource "openwrt_wireless_wifi_iface" "home" {
 
 ### Optional
 
+- `disabled` (Boolean) Disables this wireless interface without removing it.
 - `encryption` (String) Encryption method. Currently, only PSK encryption methods are supported. Must be one of: "none", "psk", "psk2", "psk2+aes", "psk2+ccmp", "psk2+tkip", "psk2+tkip+aes", "psk2+tkip+ccmp", "psk+aes", "psk+ccmp", "psk-mixed", "psk-mixed+aes", "psk-mixed+ccmp", "psk-mixed+tkip", "psk-mixed+tkip+aes", "psk-mixed+tkip+ccmp", "psk+tkip", "psk+tkip+aes", "psk+tkip+ccmp", "sae", "sae-mixed".
+- `hidden` (Boolean) Suppress SSID broadcast (hidden network).
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
+- `ieee80211r` (Boolean) Enable 802.11r fast BSS transition (roaming).
+- `ieee80211w` (Number) Management frame protection (802.11w). Must be one of: 0 = disabled, 1 = optional, 2 = required.
 - `isolate` (Boolean) Isolate wireless clients from each other.
 - `key` (String, Sensitive) The pre-shared passphrase from which the pre-shared key will be derived. The clear text key has to be 8-63 characters long.
+- `macfilter` (String) MAC address filter mode. Must be one of: "disable", "allow", "deny".
+- `maclist` (List of String) List of MAC addresses for the MAC filter.
+- `maxassoc` (Number) Maximum number of associated clients.
 - `wpa_disable_eapol_key_retries` (Boolean) Enable WPA key reinstallation attack (KRACK) workaround. This should be `true` to enable KRACK workaround (you almost surely want this enabled).
 
 ## Import
