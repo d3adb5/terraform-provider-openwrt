@@ -27,9 +27,16 @@ resource "openwrt_system_system" "this" {
 
 - `conloglevel` (Number) The maximum log level for kernel messages to be logged to the console.
 - `cronloglevel` (Number) The minimum level for cron messages to be logged to syslog.
-- `description` (String) The hostname for the system.
-- `hostname` (String) A short single-line description for the system.
+- `description` (String) A short description for the system.
+- `hostname` (String) The hostname for the system.
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
+- `klogconloglevel` (Number) The maximum log level for kernel messages to be logged to the console. Only used when klogd is running.
+- `log_file` (String) File path for local log output.
+- `log_hostname` (String) Hostname to send with syslog messages.
+- `log_ip` (String) IP address of a remote syslog server.
+- `log_port` (Number) Port of the remote syslog server (default 514).
+- `log_proto` (String) Transport protocol for remote syslog. Must be one of: "tcp", "udp".
+- `log_remote` (Boolean) Enable sending syslog to a remote server.
 - `log_size` (Number) Size of the file based log buffer in KiB.
 - `notes` (String) Multi-line free-form text about the system.
 - `timezone` (String) The POSIX.1 time zone string. This has no corresponding value in LuCI. See: https://github.com/openwrt/luci/blob/cd82ccacef78d3bb8b8af6b87dabb9e892e2b2aa/modules/luci-base/luasrc/sys/zoneinfo/tzdata.lua.
