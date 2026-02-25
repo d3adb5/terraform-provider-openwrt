@@ -139,6 +139,7 @@ resource "openwrt_dhcp_dhcp" "testing" {
 	dhcpv4 = "server"
 	dhcpv6 = "disabled"
 	id = "testing"
+	ignore = false
 	interface = "testing"
 	leasetime = "12h"
 	limit = 150
@@ -155,6 +156,7 @@ resource "openwrt_dhcp_dhcp" "testing" {
 			resource.TestCheckResourceAttr("openwrt_dhcp_dhcp.testing", "id", "testing"),
 			resource.TestCheckResourceAttr("openwrt_dhcp_dhcp.testing", "dhcpv4", "server"),
 			resource.TestCheckResourceAttr("openwrt_dhcp_dhcp.testing", "dhcpv6", "disabled"),
+			resource.TestCheckResourceAttr("openwrt_dhcp_dhcp.testing", "ignore", "false"),
 			resource.TestCheckResourceAttr("openwrt_dhcp_dhcp.testing", "interface", "testing"),
 			resource.TestCheckResourceAttr("openwrt_dhcp_dhcp.testing", "leasetime", "12h"),
 			resource.TestCheckResourceAttr("openwrt_dhcp_dhcp.testing", "limit", "150"),
