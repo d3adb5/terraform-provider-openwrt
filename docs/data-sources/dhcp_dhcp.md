@@ -27,6 +27,7 @@ data "openwrt_dhcp_dhcp" "testing" {
 
 ### Read-Only
 
+- `dhcp_option` (List of String) Additional DHCP options to pass to clients. Each entry is a DHCP option in the format "code,value[,value...]", e.g. "3,192.168.1.1" for the default router, or "6,8.8.8.8,8.8.4.4" for DNS servers.
 - `dhcpv4` (String) The mode of the DHCPv4 server. Must be one of: "disabled", "server".
 - `dhcpv6` (String) The mode of the DHCPv6 server. Must be one of: "disabled", "relay", "server".
 - `force` (Boolean) Forces DHCP serving on the specified interface even if another DHCP server is detected on the same network segment.

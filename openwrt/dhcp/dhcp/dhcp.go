@@ -13,6 +13,10 @@ import (
 )
 
 const (
+	dhcpOptionAttribute            = "dhcp_option"
+	dhcpOptionAttributeDescription = `Additional DHCP options to pass to clients. Each entry is a DHCP option in the format "code,value[,value...]", e.g. "3,192.168.1.1" for the default router, or "6,8.8.8.8,8.8.4.4" for DNS servers.`
+	dhcpOptionUCIOption            = "dhcp_option"
+
 	dhcpv4ModeAttribute            = "dhcpv4"
 	dhcpv4ModeAttributeDescription = `The mode of the DHCPv4 server. Must be one of: "disabled", "server".`
 	dhcpv4ModeDisabled             = "disabled"
@@ -72,6 +76,13 @@ const (
 )
 
 var (
+	dhcpOptionSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       dhcpOptionAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetDHCPOption, dhcpOptionAttribute, dhcpOptionUCIOption),
+		ResourceExistence: lucirpcglue.Optional,
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetDHCPOption, dhcpOptionAttribute, dhcpOptionUCIOption),
+	}
+
 	dhcpv4ModeSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       dhcpv4ModeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetDHCPv4Mode, dhcpv4ModeAttribute, dhcpv4ModeUCIOption),
@@ -175,6 +186,7 @@ var (
 	}
 
 	schemaAttributes = map[string]lucirpcglue.SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		dhcpOptionAttribute:               dhcpOptionSchemaAttribute,
 		dhcpv4ModeAttribute:               dhcpv4ModeSchemaAttribute,
 		dhcpv6ModeAttribute:               dhcpv6ModeSchemaAttribute,
 		forceAttribute:                    forceSchemaAttribute,
@@ -220,6 +232,7 @@ func NewResource() resource.Resource {
 }
 
 type model struct {
+	DHCPOption               types.List   `tfsdk:"dhcp_option"`
 	DHCPv4Mode               types.String `tfsdk:"dhcpv4"`
 	DHCPv6Mode               types.String `tfsdk:"dhcpv6"`
 	Force                    types.Bool   `tfsdk:"force"`
@@ -233,6 +246,7 @@ type model struct {
 	Start                    types.Int64  `tfsdk:"start"`
 }
 
+func modelGetDHCPOption(m model) types.List                { return m.DHCPOption }
 func modelGetDHCPv4Mode(m model) types.String              { return m.DHCPv4Mode }
 func modelGetDHCPv6Mode(m model) types.String              { return m.DHCPv6Mode }
 func modelGetForce(m model) types.Bool                     { return m.Force }
@@ -245,6 +259,7 @@ func modelGetRouterAdvertisementFlags(m model) types.Set   { return m.RouterAdve
 func modelGetRouterAdvertisementMode(m model) types.String { return m.RouterAdvertisementMode }
 func modelGetStart(m model) types.Int64                    { return m.Start }
 
+func modelSetDHCPOption(m *model, value types.List)                { m.DHCPOption = value }
 func modelSetDHCPv4Mode(m *model, value types.String)              { m.DHCPv4Mode = value }
 func modelSetDHCPv6Mode(m *model, value types.String)              { m.DHCPv6Mode = value }
 func modelSetForce(m *model, value types.Bool)                     { m.Force = value }
