@@ -13,16 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # We need to fetch more history (all of it, currently) so we can compare previous tags.
           fetch-depth: 0
       - name: Fetch tags
         run: git fetch --force --tags
       - name: Install Nix
-        uses: cachix/install-nix-action@v19
+        uses: cachix/install-nix-action@v30
       - name: Cache Nix
-        uses: actions/cache@v3.3.0
+        uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-nix-${{ hashfiles('flake.lock', 'flake.nix') }}
           path: ~/nix
@@ -30,7 +30,7 @@ jobs:
             ${{ runner.os }}-nix-${{ hashfiles('flake.lock', 'flake.nix') }}
             ${{ runner.os }}-nix-
       - name: Cache Go
-        uses: actions/cache@v3.3.0
+        uses: actions/cache@v4
         with:
           # We hash both `go.mod` in addition to `go.sum` because the version of go is only in `go.mod`.
           key: ${{ runner.os }}-go-${{ hashfiles('go.mod', 'go.sum') }}
@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-go-${{ hashfiles('go.mod', 'go.sum') }}
             ${{ runner.os }}-go-
       - name: Import GPG
-        uses: crazy-max/ghaction-import-gpg@v5.2.0
+        uses: crazy-max/ghaction-import-gpg@v6
         id: import_gpg
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
