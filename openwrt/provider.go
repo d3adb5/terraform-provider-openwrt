@@ -16,6 +16,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
+	acmecert "github.com/joneshf/terraform-provider-openwrt/openwrt/acme/cert"
+	acmesettings "github.com/joneshf/terraform-provider-openwrt/openwrt/acme/settings"
 	ddnsservice "github.com/joneshf/terraform-provider-openwrt/openwrt/ddns/service"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/dhcp"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/dhcp/dnsmasq"
@@ -169,6 +171,8 @@ func (p *openWrtProvider) DataSources(
 	ctx context.Context,
 ) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		acmecert.NewDataSource,
+		acmesettings.NewDataSource,
 		bridgevlan.NewDataSource,
 		ddnsservice.NewDataSource,
 		defaults.NewDataSource,
@@ -207,6 +211,8 @@ func (p *openWrtProvider) Resources(
 	ctx context.Context,
 ) []func() resource.Resource {
 	return []func() resource.Resource{
+		acmecert.NewResource,
+		acmesettings.NewResource,
 		bridgevlan.NewResource,
 		ddnsservice.NewResource,
 		defaults.NewResource,
