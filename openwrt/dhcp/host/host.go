@@ -39,21 +39,21 @@ var (
 	addDNSEntriesSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       addDNSEntriesAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetAddDNSEntries, addDNSEntriesAttribute, addDNSEntriesUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetAddDNSEntries, addDNSEntriesAttribute, addDNSEntriesUCIOption),
 	}
 
 	hostnameSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       hostnameAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetHostname, hostnameAttribute, hostnameUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetHostname, hostnameAttribute, hostnameUCIOption),
 	}
 
 	ipAddressSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       ipAddressAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetIPAddress, ipAddressAttribute, ipAddressUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetIPAddress, ipAddressAttribute, ipAddressUCIOption),
 		Validators: []validator.String{
 			stringvalidator.Any(
@@ -71,7 +71,7 @@ var (
 	macAddressSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       macAddressAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetMACAddress, macAddressAttribute, macAddressUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetMACAddress, macAddressAttribute, macAddressUCIOption),
 		Validators: []validator.String{
 			stringvalidator.RegexMatches(

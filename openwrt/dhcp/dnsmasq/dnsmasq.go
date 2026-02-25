@@ -71,91 +71,91 @@ var (
 	authoritativeModeSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       authoritativeModeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetAuthoritativeMode, authoritativeModeAttribute, authoritativeModeUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetAuthoritativeMode, authoritativeModeAttribute, authoritativeModeUCIOption),
 	}
 
 	domainSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       domainAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetDomain, domainAttribute, domainUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetDomain, domainAttribute, domainUCIOption),
 	}
 
 	domainNeededSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       domainNeededAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetDomainNeeded, domainNeededAttribute, domainNeededUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetDomainNeeded, domainNeededAttribute, domainNeededUCIOption),
 	}
 
 	ednsPacketMaxSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       ednsPacketMaxAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetEDNSPacketMax, ednsPacketMaxAttribute, ednsPacketMaxUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetEDNSPacketMax, ednsPacketMaxAttribute, ednsPacketMaxUCIOption),
 	}
 
 	expandHostsSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       expandHostsAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetExpandHosts, expandHostsAttribute, expandHostsUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetExpandHosts, expandHostsAttribute, expandHostsUCIOption),
 	}
 
 	leaseFileSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       leaseFileAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetLeaseFile, leaseFileAttribute, leaseFileUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetLeaseFile, leaseFileAttribute, leaseFileUCIOption),
 	}
 
 	localizeQueriesSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       localizeQueriesAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetLocalizeQueries, localizeQueriesAttribute, localizeQueriesUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetLocalizeQueries, localizeQueriesAttribute, localizeQueriesUCIOption),
 	}
 
 	localLookupSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       localLookupAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetLocalLookup, localLookupAttribute, localLookupUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetLocalLookup, localLookupAttribute, localLookupUCIOption),
 	}
 
 	localServiceSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       localServiceAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetLocalService, localServiceAttribute, localServiceUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetLocalService, localServiceAttribute, localServiceUCIOption),
 	}
 
 	readEthersSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       readEthersAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetReadEthers, readEthersAttribute, readEthersUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetReadEthers, readEthersAttribute, readEthersUCIOption),
 	}
 
 	rebindLocalhostSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       rebindLocalhostAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetRebindLocalhost, rebindLocalhostAttribute, rebindLocalhostUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetRebindLocalhost, rebindLocalhostAttribute, rebindLocalhostUCIOption),
 	}
 
 	rebindProtectionSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       rebindProtectionAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetRebindProtection, rebindProtectionAttribute, rebindProtectionUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetRebindProtection, rebindProtectionAttribute, rebindProtectionUCIOption),
 	}
 
 	resolvFileSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       resolvFileAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetResolvFile, resolvFileAttribute, resolvFileUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetResolvFile, resolvFileAttribute, resolvFileUCIOption),
 	}
 

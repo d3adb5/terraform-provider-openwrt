@@ -75,7 +75,7 @@ var (
 	dhcpv4ModeSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       dhcpv4ModeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetDHCPv4Mode, dhcpv4ModeAttribute, dhcpv4ModeUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetDHCPv4Mode, dhcpv4ModeAttribute, dhcpv4ModeUCIOption),
 		Validators: []validator.String{
 			stringvalidator.OneOf(
@@ -88,7 +88,7 @@ var (
 	dhcpv6ModeSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       dhcpv6ModeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetDHCPv6Mode, dhcpv6ModeAttribute, dhcpv6ModeUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetDHCPv6Mode, dhcpv6ModeAttribute, dhcpv6ModeUCIOption),
 		Validators: []validator.String{
 			stringvalidator.OneOf(
@@ -102,21 +102,21 @@ var (
 	forceSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       forceAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetForce, forceAttribute, forceUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetForce, forceAttribute, forceUCIOption),
 	}
 
 	ignoreSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       ignoreAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetIgnore, ignoreAttribute, ignoreUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetIgnore, ignoreAttribute, ignoreUCIOption),
 	}
 
 	interfaceSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       interfaceAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetInterface, interfaceAttribute, interfaceUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetInterface, interfaceAttribute, interfaceUCIOption),
 		Validators: []validator.String{
 			lucirpcglue.RequiredIfAttributeNotEqualBool(path.MatchRoot(ignoreAttribute), true),
@@ -126,7 +126,7 @@ var (
 	leaseTimeSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       leaseTimeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetLeaseTime, leaseTimeAttribute, leaseTimeUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetLeaseTime, leaseTimeAttribute, leaseTimeUCIOption),
 		Validators: []validator.String{
 			lucirpcglue.RequiredIfAttributeNotEqualBool(path.MatchRoot(ignoreAttribute), true),
@@ -136,7 +136,7 @@ var (
 	limitSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       limitAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetLimit, limitAttribute, limitUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetLimit, limitAttribute, limitUCIOption),
 		Validators: []validator.Int64{
 			lucirpcglue.RequiredIfAttributeNotEqualBool(path.MatchRoot(ignoreAttribute), true),
@@ -146,7 +146,7 @@ var (
 	routerAdvertisementFlagsSchemaAttribute = lucirpcglue.SetStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       routerAdvertisementFlagsAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionSetString(modelSetRouterAdvertisementFlags, routerAdvertisementFlagsAttribute, routerAdvertisementFlagsUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionSetString(modelGetRouterAdvertisementFlags, routerAdvertisementFlagsAttribute, routerAdvertisementFlagsUCIOption),
 		Validators: []validator.Set{
 			setvalidator.ValueStringsAre(
@@ -163,7 +163,7 @@ var (
 	routerAdvertisementModeSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       routerAdvertisementModeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetRouterAdvertisementMode, routerAdvertisementModeAttribute, routerAdvertisementModeUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetRouterAdvertisementMode, routerAdvertisementModeAttribute, routerAdvertisementModeUCIOption),
 		Validators: []validator.String{
 			stringvalidator.OneOf(
@@ -191,7 +191,7 @@ var (
 	startSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       startAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetStart, startAttribute, startUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetStart, startAttribute, startUCIOption),
 		Validators: []validator.Int64{
 			lucirpcglue.RequiredIfAttributeNotEqualBool(path.MatchRoot(ignoreAttribute), true),

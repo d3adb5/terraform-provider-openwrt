@@ -45,6 +45,6 @@ Dynamic DNS (DDNS) service configuration. Each section configures one DDNS recor
 - `use_ipv6` (Boolean) Update the IPv6 AAAA record instead of the IPv4 A record.
 - `use_logfile` (Boolean) Write update activity to a dedicated log file.
 - `use_syslog` (Number) Syslog verbosity level. 0 = disabled, 1–4 = increasing verbosity.
-- `username` (String) Username or account identifier for the DDNS provider.
+- `username` (String, Sensitive) Username or account identifier for the DDNS provider.
 
 

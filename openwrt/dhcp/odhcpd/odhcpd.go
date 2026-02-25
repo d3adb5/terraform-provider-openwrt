@@ -41,28 +41,28 @@ var (
 	leaseFileSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       leaseFileAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetLeaseFile, leaseFileAttribute, leaseFileUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetLeaseFile, leaseFileAttribute, leaseFileUCIOption),
 	}
 
 	leaseTriggerSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       leaseTriggerAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetLeaseTrigger, leaseTriggerAttribute, leaseTriggerUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetLeaseTrigger, leaseTriggerAttribute, leaseTriggerUCIOption),
 	}
 
 	legacySchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       legacyAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetLegacy, legacyAttribute, legacyUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetLegacy, legacyAttribute, legacyUCIOption),
 	}
 
 	logLevelSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       logLevelAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetLogLevel, logLevelAttribute, logLevelUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetLogLevel, logLevelAttribute, logLevelUCIOption),
 		Validators: []validator.Int64{
 			int64validator.Between(0, 7),
@@ -72,7 +72,7 @@ var (
 	mainDHCPSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       mainDHCPAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetMainDHCP, mainDHCPAttribute, mainDHCPUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetMainDHCP, mainDHCPAttribute, mainDHCPUCIOption),
 	}
 
