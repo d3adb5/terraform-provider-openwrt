@@ -36,8 +36,7 @@ const (
 	disabledUCIOption            = "disabled"
 
 	channelAttribute            = "channel"
-	channelAttributeDescription = `The wireless channel. Currently, only "auto" is supported.`
-	channelAuto                 = "auto"
+	channelAttributeDescription = `The wireless channel. Use "auto" for automatic selection, or a specific channel number (e.g. "1", "6", "11" for 2.4GHz; "36", "40", "100" for 5GHz).`
 	channelUCIOption            = "channel"
 
 	countryCodeAttribute            = "country"
@@ -126,9 +125,7 @@ var (
 		ResourceExistence: lucirpcglue.Required,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetChannel, channelAttribute, channelUCIOption),
 		Validators: []validator.String{
-			stringvalidator.OneOf(
-				channelAuto,
-			),
+			stringvalidator.LengthAtLeast(1),
 		},
 	}
 
