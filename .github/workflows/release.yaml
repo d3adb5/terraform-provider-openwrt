@@ -19,26 +19,20 @@ jobs:
           fetch-depth: 0
       - name: Fetch tags
         run: git fetch --force --tags
-      - name: Install Nix
-        uses: cachix/install-nix-action@v30
-      - name: Cache Nix
-        uses: actions/cache@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          key: ${{ runner.os }}-nix-${{ hashfiles('flake.lock', 'flake.nix') }}
-          path: ~/nix
-          restore-keys: |
-            ${{ runner.os }}-nix-${{ hashfiles('flake.lock', 'flake.nix') }}
-            ${{ runner.os }}-nix-
+          go-version-file: go.mod
       - name: Cache Go
         uses: actions/cache@v4
         with:
           # We hash both `go.mod` in addition to `go.sum` because the version of go is only in `go.mod`.
-          key: ${{ runner.os }}-go-${{ hashfiles('go.mod', 'go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('go.mod', 'go.sum') }}
           path: |
             ~/.cache/go-build
             ~/go/pkg/mod
           restore-keys: |
-            ${{ runner.os }}-go-${{ hashfiles('go.mod', 'go.sum') }}
+            ${{ runner.os }}-go-${{ hashFiles('go.mod', 'go.sum') }}
             ${{ runner.os }}-go-
       - name: Import GPG
         uses: crazy-max/ghaction-import-gpg@v6
@@ -47,7 +41,10 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
       - name: Release
-        run: nix --store ~/nix develop . --command make release
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: "~> v2"
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}

@@ -11,34 +11,28 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-      - name: Install Nix
-        uses: cachix/install-nix-action@v30
-      - name: Cache Nix
-        uses: actions/cache@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          key: ${{ runner.os }}-nix-${{ hashfiles('flake.lock', 'flake.nix') }}
-          path: ~/nix
-          restore-keys: |
-            ${{ runner.os }}-nix-${{ hashfiles('flake.lock', 'flake.nix') }}
-            ${{ runner.os }}-nix-
+          go-version-file: go.mod
       - name: Cache Go
         uses: actions/cache@v4
         with:
           # We hash both `go.mod` in addition to `go.sum` because the version of go is only in `go.mod`.
-          key: ${{ runner.os }}-go-${{ hashfiles('go.mod', 'go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('go.mod', 'go.sum') }}
           path: |
             ~/.cache/go-build
             ~/go/pkg/mod
           restore-keys: |
-            ${{ runner.os }}-go-${{ hashfiles('go.mod', 'go.sum') }}
+            ${{ runner.os }}-go-${{ hashFiles('go.mod', 'go.sum') }}
             ${{ runner.os }}-go-
       - name: Cache Docker Image
         uses: actions/cache@v4
         with:
-          key: ${{ runner.os }}-docker-${{ hashfiles('acceptance-test.Dockerfile', 'acceptance-test.Dockerfile.dockerignore') }}
+          key: ${{ runner.os }}-docker-${{ hashFiles('acceptance-test.Dockerfile', 'acceptance-test.Dockerfile.dockerignore') }}
           path: .cache/docker
           restore-keys: |
-            ${{ runner.os }}-docker-${{ hashfiles('acceptance-test.Dockerfile', 'acceptance-test.Dockerfile.dockerignore') }}
+            ${{ runner.os }}-docker-${{ hashFiles('acceptance-test.Dockerfile', 'acceptance-test.Dockerfile.dockerignore') }}
             ${{ runner.os }}-docker-
       - name: Test
-        run: nix --store ~/nix develop . --command make test
+        run: make test
