@@ -128,63 +128,63 @@ var (
 	networkSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       networkAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetNetwork, networkAttribute, networkUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetNetwork, networkAttribute, networkUCIOption),
 	}
 
 	masqSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       masqAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetMasq, masqAttribute, masqUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetMasq, masqAttribute, masqUCIOption),
 	}
 
 	masqSrcSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       masqSrcAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetMasqSrc, masqSrcAttribute, masqSrcUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetMasqSrc, masqSrcAttribute, masqSrcUCIOption),
 	}
 
 	masqDestSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       masqDestAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetMasqDest, masqDestAttribute, masqDestUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetMasqDest, masqDestAttribute, masqDestUCIOption),
 	}
 
 	masqAllowInvalidSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       masqAllowInvalidAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetMasqAllowInvalid, masqAllowInvalidAttribute, masqAllowInvalidUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetMasqAllowInvalid, masqAllowInvalidAttribute, masqAllowInvalidUCIOption),
 	}
 
 	mtuFixSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       mtuFixAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetMtuFix, mtuFixAttribute, mtuFixUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetMtuFix, mtuFixAttribute, mtuFixUCIOption),
 	}
 
 	logSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       logAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetLog, logAttribute, logUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetLog, logAttribute, logUCIOption),
 	}
 
 	logLimitSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       logLimitAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetLogLimit, logLimitAttribute, logLimitUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetLogLimit, logLimitAttribute, logLimitUCIOption),
 	}
 
 	familySchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       familyAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetFamily, familyAttribute, familyUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetFamily, familyAttribute, familyUCIOption),
 		Validators:        familyValidators,
 	}
@@ -192,14 +192,14 @@ var (
 	conntrackSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       conntrackAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetConntrack, conntrackAttribute, conntrackUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetConntrack, conntrackAttribute, conntrackUCIOption),
 	}
 
 	autoHelperSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       autoHelperAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetAutoHelper, autoHelperAttribute, autoHelperUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetAutoHelper, autoHelperAttribute, autoHelperUCIOption),
 	}
 
