@@ -25,7 +25,7 @@ var (
 	packetSteeringSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       "Use every CPU to handle packet traffic.",
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetPacketSteering, packetSteeringAttribute, packetSteeringUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetPacketSteering, packetSteeringAttribute, packetSteeringUCIOption),
 	}
 

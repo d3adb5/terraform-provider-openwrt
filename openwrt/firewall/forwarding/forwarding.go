@@ -44,7 +44,7 @@ var (
 	familySchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       familyAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetFamily, familyAttribute, familyUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetFamily, familyAttribute, familyUCIOption),
 		Validators:        familyValidators,
 	}

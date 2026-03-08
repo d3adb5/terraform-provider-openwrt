@@ -50,28 +50,28 @@ var (
 	enableMirrorReceivedSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       enableMirrorReceivedAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetEnableMirrorReceived, enableMirrorReceivedAttribute, enableMirrorReceivedUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetEnableMirrorReceived, enableMirrorReceivedAttribute, enableMirrorReceivedUCIOption),
 	}
 
 	enableMirrorTransmittedSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       enableMirrorTransmittedAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetEnableMirrorTransmitted, enableMirrorTransmittedAttribute, enableMirrorTransmittedUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetEnableMirrorTransmitted, enableMirrorTransmittedAttribute, enableMirrorTransmittedUCIOption),
 	}
 
 	enableVLANSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       enableVLANAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetEnableVLAN, enableVLANAttribute, enableVLANUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetEnableVLAN, enableVLANAttribute, enableVLANUCIOption),
 	}
 
 	mirrorMonitorPortSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       mirrorMonitorPortAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetMirrorMonitorPort, mirrorMonitorPortAttribute, mirrorMonitorPortUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetMirrorMonitorPort, mirrorMonitorPortAttribute, mirrorMonitorPortUCIOption),
 		Validators: []validator.Int64{
 			int64validator.Any(
@@ -90,7 +90,7 @@ var (
 	mirrorSourcePortSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       mirrorSourcePortAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetMirrorSourcePort, mirrorSourcePortAttribute, mirrorSourcePortUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetMirrorSourcePort, mirrorSourcePortAttribute, mirrorSourcePortUCIOption),
 		Validators: []validator.Int64{
 			int64validator.Any(
@@ -116,7 +116,7 @@ var (
 	resetSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       resetAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetReset, resetAttribute, resetUCIOption),
-		ResourceExistence: lucirpcglue.NoValidation,
+		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetReset, resetAttribute, resetUCIOption),
 	}
 
