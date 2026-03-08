@@ -34,6 +34,10 @@ import (
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/device"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/globals"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/networkinterface"
+	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/networkroute"
+	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/networkroute6"
+	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/networkrule"
+	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/networkrule6"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/networkswitch"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/network/switchvlan"
 	"github.com/joneshf/terraform-provider-openwrt/openwrt/system/system"
@@ -185,6 +189,10 @@ func (p *openWrtProvider) DataSources(
 		globals.NewDataSource,
 		host.NewDataSource,
 		networkinterface.NewDataSource,
+		networkroute.NewDataSource,
+		networkroute6.NewDataSource,
+		networkrule.NewDataSource,
+		networkrule6.NewDataSource,
 		networkswitch.NewDataSource,
 		odhcpd.NewDataSource,
 		redirect.NewDataSource,
@@ -226,6 +234,10 @@ func (p *openWrtProvider) Resources(
 		globals.NewResource,
 		host.NewResource,
 		networkinterface.NewResource,
+		networkroute.NewResource,
+		networkroute6.NewResource,
+		networkrule.NewResource,
+		networkrule6.NewResource,
 		networkswitch.NewResource,
 		odhcpd.NewResource,
 		redirect.NewResource,
