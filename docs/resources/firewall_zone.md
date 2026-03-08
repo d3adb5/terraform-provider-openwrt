@@ -32,9 +32,9 @@ Manages a firewall zone. Zones group network interfaces and define default polic
 - `log_limit` (String) Rate limit for log messages, e.g. "10/minute".
 - `masq` (Boolean) Enable masquerading (NAT) for outbound traffic from this zone.
 - `masq_allow_invalid` (Boolean) Allow masquerading of packets with an invalid conntrack state.
-- `masq_dest` (List of String) Restrict masquerading to traffic destined for these prefixes.
-- `masq_src` (List of String) Restrict masquerading to traffic originating from these source prefixes.
+- `masq_dest` (Set of String) Restrict masquerading to traffic destined for these prefixes.
+- `masq_src` (Set of String) Restrict masquerading to traffic originating from these source prefixes.
 - `mtu_fix` (Boolean) Enable MSS clamping for outgoing TCP connections in this zone.
-- `network` (List of String) List of interfaces or networks belonging to this zone.
+- `network` (Set of String) List of interfaces or networks belonging to this zone.
 
 

@@ -1,6 +1,9 @@
 package zone
 
 import (
+	"regexp"
+
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -94,11 +97,33 @@ var (
 		stringvalidator.OneOf("ipv4", "ipv6", "any"),
 	}
 
+	nameValidators = []validator.String{
+		stringvalidator.LengthAtLeast(1),
+	}
+
+	// ipCidrValidators accepts an IPv4 or IPv6 address with an optional CIDR
+	// suffix, optionally prefixed with ! for negation.
+	ipCidrValidators = []validator.String{
+		stringvalidator.RegexMatches(
+			regexp.MustCompile(`^!?[0-9a-fA-F.:][0-9a-fA-F.:/]*$`),
+			`must be an IPv4 or IPv6 address or CIDR range (e.g. "192.168.1.0/24" or "2001:db8::/32"), optionally prefixed with ! to negate`,
+		),
+	}
+
+	// logLimitValidators accepts rate strings in the format "N/unit".
+	logLimitValidators = []validator.String{
+		stringvalidator.RegexMatches(
+			regexp.MustCompile(`^\d+/(second|minute|hour|day)$`),
+			`must be a rate in the format "N/unit" where unit is second, minute, hour, or day (e.g. "10/minute")`,
+		),
+	}
+
 	nameSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       nameAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetName, nameAttribute, nameUCIOption),
 		ResourceExistence: lucirpcglue.Required,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetName, nameAttribute, nameUCIOption),
+		Validators:        nameValidators,
 	}
 
 	forwardSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -125,11 +150,11 @@ var (
 		Validators:        TypeValidators,
 	}
 
-	networkSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+	networkSchemaAttribute = lucirpcglue.SetStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       networkAttributeDescription,
-		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetNetwork, networkAttribute, networkUCIOption),
+		ReadResponse:      lucirpcglue.ReadResponseOptionSetString(modelSetNetwork, networkAttribute, networkUCIOption),
 		ResourceExistence: lucirpcglue.Optional,
-		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetNetwork, networkAttribute, networkUCIOption),
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionSetString(modelGetNetwork, networkAttribute, networkUCIOption),
 	}
 
 	masqSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -139,18 +164,20 @@ var (
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetMasq, masqAttribute, masqUCIOption),
 	}
 
-	masqSrcSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+	masqSrcSchemaAttribute = lucirpcglue.SetStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       masqSrcAttributeDescription,
-		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetMasqSrc, masqSrcAttribute, masqSrcUCIOption),
+		ReadResponse:      lucirpcglue.ReadResponseOptionSetString(modelSetMasqSrc, masqSrcAttribute, masqSrcUCIOption),
 		ResourceExistence: lucirpcglue.Optional,
-		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetMasqSrc, masqSrcAttribute, masqSrcUCIOption),
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionSetString(modelGetMasqSrc, masqSrcAttribute, masqSrcUCIOption),
+		Validators:        []validator.Set{setvalidator.ValueStringsAre(ipCidrValidators...)},
 	}
 
-	masqDestSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+	masqDestSchemaAttribute = lucirpcglue.SetStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       masqDestAttributeDescription,
-		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetMasqDest, masqDestAttribute, masqDestUCIOption),
+		ReadResponse:      lucirpcglue.ReadResponseOptionSetString(modelSetMasqDest, masqDestAttribute, masqDestUCIOption),
 		ResourceExistence: lucirpcglue.Optional,
-		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetMasqDest, masqDestAttribute, masqDestUCIOption),
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionSetString(modelGetMasqDest, masqDestAttribute, masqDestUCIOption),
+		Validators:        []validator.Set{setvalidator.ValueStringsAre(ipCidrValidators...)},
 	}
 
 	masqAllowInvalidSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -179,6 +206,7 @@ var (
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetLogLimit, logLimitAttribute, logLimitUCIOption),
 		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetLogLimit, logLimitAttribute, logLimitUCIOption),
+		Validators:        logLimitValidators,
 	}
 
 	familySchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -249,10 +277,10 @@ type model struct {
 	Forward          types.String `tfsdk:"forward"`
 	Input            types.String `tfsdk:"input"`
 	Output           types.String `tfsdk:"output"`
-	Network          types.List   `tfsdk:"network"`
+	Network          types.Set    `tfsdk:"network"`
 	Masq             types.Bool   `tfsdk:"masq"`
-	MasqSrc          types.List   `tfsdk:"masq_src"`
-	MasqDest         types.List   `tfsdk:"masq_dest"`
+	MasqSrc          types.Set    `tfsdk:"masq_src"`
+	MasqDest         types.Set    `tfsdk:"masq_dest"`
 	MasqAllowInvalid types.Bool   `tfsdk:"masq_allow_invalid"`
 	MtuFix           types.Bool   `tfsdk:"mtu_fix"`
 	Log              types.Bool   `tfsdk:"log"`
@@ -267,10 +295,10 @@ func modelGetName(m model) types.String           { return m.Name }
 func modelGetForward(m model) types.String        { return m.Forward }
 func modelGetInput(m model) types.String          { return m.Input }
 func modelGetOutput(m model) types.String         { return m.Output }
-func modelGetNetwork(m model) types.List          { return m.Network }
+func modelGetNetwork(m model) types.Set           { return m.Network }
 func modelGetMasq(m model) types.Bool             { return m.Masq }
-func modelGetMasqSrc(m model) types.List          { return m.MasqSrc }
-func modelGetMasqDest(m model) types.List         { return m.MasqDest }
+func modelGetMasqSrc(m model) types.Set           { return m.MasqSrc }
+func modelGetMasqDest(m model) types.Set          { return m.MasqDest }
 func modelGetMasqAllowInvalid(m model) types.Bool { return m.MasqAllowInvalid }
 func modelGetMtuFix(m model) types.Bool           { return m.MtuFix }
 func modelGetLog(m model) types.Bool              { return m.Log }
@@ -284,10 +312,10 @@ func modelSetName(m *model, value types.String)           { m.Name = value }
 func modelSetForward(m *model, value types.String)        { m.Forward = value }
 func modelSetInput(m *model, value types.String)          { m.Input = value }
 func modelSetOutput(m *model, value types.String)         { m.Output = value }
-func modelSetNetwork(m *model, value types.List)          { m.Network = value }
+func modelSetNetwork(m *model, value types.Set)           { m.Network = value }
 func modelSetMasq(m *model, value types.Bool)             { m.Masq = value }
-func modelSetMasqSrc(m *model, value types.List)          { m.MasqSrc = value }
-func modelSetMasqDest(m *model, value types.List)         { m.MasqDest = value }
+func modelSetMasqSrc(m *model, value types.Set)           { m.MasqSrc = value }
+func modelSetMasqDest(m *model, value types.Set)          { m.MasqDest = value }
 func modelSetMasqAllowInvalid(m *model, value types.Bool) { m.MasqAllowInvalid = value }
 func modelSetMtuFix(m *model, value types.Bool)           { m.MtuFix = value }
 func modelSetLog(m *model, value types.Bool)              { m.Log = value }
