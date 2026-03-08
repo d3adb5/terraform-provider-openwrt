@@ -694,7 +694,7 @@ func TestClientGetSection(t *testing.T) {
 		)
 
 		// Then
-		assert.ErrorContains(t, err, "could not find section")
+		assert.ErrorIs(t, err, lucirpc.ErrSectionNotFound)
 	})
 
 	t.Run("returns section data when successful", func(t *testing.T) {

@@ -2,6 +2,7 @@ package lucirpcglue
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -212,6 +213,27 @@ func (d *resource[Model]) Read(
 		return
 	}
 
+	id := d.getId(model).ValueString()
+	ctx = tflog.SetField(ctx, "section", fmt.Sprintf("%s.%s", d.uciConfig, id))
+
+	// Check whether the section still exists before reading it into the model.
+	// If it has been deleted outside of Terraform (e.g. auto-generated UCI
+	// section names changed after another section was removed), remove it from
+	// state so Terraform plans to recreate it rather than returning an error.
+	_, err := d.client.GetSection(ctx, d.uciConfig, id)
+	if err != nil {
+		if errors.Is(err, lucirpc.ErrSectionNotFound) {
+			tflog.Warn(ctx, fmt.Sprintf("Section %s.%s no longer exists; removing from state", d.uciConfig, id))
+			res.State.RemoveResource(ctx)
+			return
+		}
+		res.Diagnostics.AddError(
+			fmt.Sprintf("problem reading %s resource", d.fullTypeName),
+			err.Error(),
+		)
+		return
+	}
+
 	ctx, model, diagnostics = ReadModel(
 		ctx,
 		d.fullTypeName,
@@ -219,7 +241,7 @@ func (d *resource[Model]) Read(
 		d.client,
 		d.schemaAttributes,
 		d.uciConfig,
-		d.getId(model).ValueString(),
+		id,
 	)
 	res.Diagnostics.Append(diagnostics...)
 	if res.Diagnostics.HasError() {

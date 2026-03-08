@@ -4,10 +4,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 )
+
+// ErrSectionNotFound is returned by GetSection when the requested section does not exist.
+var ErrSectionNotFound = errors.New("section not found")
 
 const (
 	humanReadableCommitChanges = "commit changes"
@@ -237,7 +241,7 @@ func (c *Client) GetSection(
 	}
 
 	if responseBody == nil {
-		return nil, fmt.Errorf("could not find section %s.%s", config, section)
+		return nil, fmt.Errorf("%w: %s.%s", ErrSectionNotFound, config, section)
 	}
 
 	// Depending on the `config` and `section`,
