@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/joneshf/terraform-provider-openwrt/internal/acceptancetest"
-	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
+	"github.com/ORFops/terraform-provider-openwrt/internal/acceptancetest"
+	"github.com/ORFops/terraform-provider-openwrt/lucirpc"
 	"gotest.tools/v3/assert"
 )
 

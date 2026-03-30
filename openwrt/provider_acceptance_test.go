@@ -14,8 +14,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
-	"github.com/joneshf/terraform-provider-openwrt/internal/acceptancetest"
-	"github.com/joneshf/terraform-provider-openwrt/openwrt"
+	"github.com/ORFops/terraform-provider-openwrt/internal/acceptancetest"
+	"github.com/ORFops/terraform-provider-openwrt/openwrt"
 	"github.com/ory/dockertest/v3"
 	"gotest.tools/v3/assert"
 )

@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
+	"github.com/ORFops/terraform-provider-openwrt/lucirpc"
 )
 
 var (

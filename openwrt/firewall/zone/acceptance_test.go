@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/joneshf/terraform-provider-openwrt/internal/acceptancetest"
+	"github.com/ORFops/terraform-provider-openwrt/internal/acceptancetest"
 	"github.com/ory/dockertest/v3"
 )
 

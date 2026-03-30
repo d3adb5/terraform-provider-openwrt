@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
-	"github.com/joneshf/terraform-provider-openwrt/openwrt"
+	"github.com/ORFops/terraform-provider-openwrt/openwrt"
 	"gotest.tools/v3/assert"
 )
 

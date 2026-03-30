@@ -9,8 +9,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/joneshf/terraform-provider-openwrt/internal/acceptancetest"
-	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
+	"github.com/ORFops/terraform-provider-openwrt/internal/acceptancetest"
+	"github.com/ORFops/terraform-provider-openwrt/lucirpc"
 	"github.com/ory/dockertest/v3"
 	"golang.org/x/crypto/ssh"
 	"gotest.tools/v3/assert"

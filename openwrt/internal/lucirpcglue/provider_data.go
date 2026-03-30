@@ -2,7 +2,7 @@ package lucirpcglue
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
+	"github.com/ORFops/terraform-provider-openwrt/lucirpc"
 )
 
 type ConfigureRequest struct {
@@ -29,7 +29,7 @@ func ParseProviderData(
 	if !ok {
 		diagnostics.AddError(
 			"OpenWrt provider not configured correctly",
-			"Expected the provider data to be of a given structure, but it was not. This is a problem with the provider implementation. Please report this to https://github.com/joneshf/terraform-provider-openwrt",
+			"Expected the provider data to be of a given structure, but it was not. This is a problem with the provider implementation. Please report this to https://github.com/ORFops/terraform-provider-openwrt",
 		)
 		return ProviderData{}, diagnostics
 	}

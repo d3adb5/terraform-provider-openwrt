@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
+	"github.com/ORFops/terraform-provider-openwrt/lucirpc"
 	"gotest.tools/v3/assert"
 )
 

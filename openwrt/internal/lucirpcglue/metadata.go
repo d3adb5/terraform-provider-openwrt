@@ -6,8 +6,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
-	"github.com/joneshf/terraform-provider-openwrt/openwrt/internal/logger"
+	"github.com/ORFops/terraform-provider-openwrt/lucirpc"
+	"github.com/ORFops/terraform-provider-openwrt/openwrt/internal/logger"
 )
 
 // GetMetadataString attempts to parse the given metadata key from the section as a string.

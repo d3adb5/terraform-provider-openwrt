@@ -4,8 +4,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
-	"github.com/joneshf/terraform-provider-openwrt/openwrt/internal/lucirpcglue"
+	"github.com/ORFops/terraform-provider-openwrt/lucirpc"
+	"github.com/ORFops/terraform-provider-openwrt/openwrt/internal/lucirpcglue"
 )
 
 const (

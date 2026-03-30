@@ -12,8 +12,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
-	"github.com/joneshf/terraform-provider-openwrt/openwrt/internal/logger"
+	"github.com/ORFops/terraform-provider-openwrt/lucirpc"
+	"github.com/ORFops/terraform-provider-openwrt/openwrt/internal/logger"
 )
 
 var (

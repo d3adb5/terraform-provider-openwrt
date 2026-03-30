@@ -16,8 +16,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/joneshf/terraform-provider-openwrt/lucirpc"
-	"github.com/joneshf/terraform-provider-openwrt/openwrt"
+	"github.com/ORFops/terraform-provider-openwrt/lucirpc"
+	"github.com/ORFops/terraform-provider-openwrt/openwrt"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"gotest.tools/v3/assert"
@@ -25,7 +25,7 @@ import (
 
 const (
 	acceptanceTestDockerDockerfile = "acceptance-test.Dockerfile"
-	acceptanceTestDockerName       = "joneshf/openwrt"
+	acceptanceTestDockerName       = "ORFops/openwrt"
 	acceptanceTestDockerHTTPPort   = "80/tcp"
 	acceptanceTestDockerSSHPort    = "22/tcp"
 	acceptanceTestDockerTag        = "acceptance-test"

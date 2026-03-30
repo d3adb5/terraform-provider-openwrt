@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/joneshf/terraform-provider-openwrt/openwrt"
+	"github.com/ORFops/terraform-provider-openwrt/openwrt"
 )
 
 // Provider documentation generation.
@@ -23,7 +23,7 @@ func main() {
 		return openwrt.New(version, os.LookupEnv)
 	}
 	options := providerserver.ServeOpts{
-		Address: "registry.terraform.io/joneshf/openwrt",
+		Address: "registry.terraform.io/ORFops/openwrt",
 	}
 	providerserver.Serve(
 		ctx,
