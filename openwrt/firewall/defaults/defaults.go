@@ -27,17 +27,17 @@ const (
 	dropInvalidAttributeDescription = "Drop packets with an invalid conntrack state."
 	dropInvalidUCIOption            = "drop_invalid"
 
-	synFloodAttribute            = "syn_flood"
-	synFloodAttributeDescription = "Enable SYN flood protection."
-	synFloodUCIOption            = "syn_flood"
+	synfloodProtectAttribute            = "synflood_protect"
+	synfloodProtectAttributeDescription = "Enable SYN flood protection."
+	synfloodProtectUCIOption            = "synflood_protect"
 
-	synFloodRateAttribute            = "syn_flood_rate"
-	synFloodRateAttributeDescription = `Rate limit for SYN flood protection (e.g. "25/second").`
-	synFloodRateUCIOption            = "syn_flood_rate"
+	synfloodRateAttribute            = "synflood_rate"
+	synfloodRateAttributeDescription = `Rate limit for SYN flood protection (e.g. "25/second").`
+	synfloodRateUCIOption            = "synflood_rate"
 
-	synFloodBurstAttribute            = "syn_flood_burst"
-	synFloodBurstAttributeDescription = "Burst limit for SYN flood protection."
-	synFloodBurstUCIOption            = "syn_flood_burst"
+	synfloodBurstAttribute            = "synflood_burst"
+	synfloodBurstAttributeDescription = "Burst limit for SYN flood protection."
+	synfloodBurstUCIOption            = "synflood_burst"
 
 	tcpSynCookiesAttribute            = "tcp_syncookies"
 	tcpSynCookiesAttributeDescription = "Enable TCP SYN cookie protection."
@@ -117,25 +117,25 @@ var (
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetDropInvalid, dropInvalidAttribute, dropInvalidUCIOption),
 	}
 
-	synFloodSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
-		Description:       synFloodAttributeDescription,
-		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetSynFlood, synFloodAttribute, synFloodUCIOption),
+	synfloodProtectSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       synfloodProtectAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetSynfloodProtect, synfloodProtectAttribute, synfloodProtectUCIOption),
 		ResourceExistence: lucirpcglue.Optional,
-		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetSynFlood, synFloodAttribute, synFloodUCIOption),
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetSynfloodProtect, synfloodProtectAttribute, synfloodProtectUCIOption),
 	}
 
-	synFloodRateSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
-		Description:       synFloodRateAttributeDescription,
-		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetSynFloodRate, synFloodRateAttribute, synFloodRateUCIOption),
+	synfloodRateSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       synfloodRateAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetSynfloodRate, synfloodRateAttribute, synfloodRateUCIOption),
 		ResourceExistence: lucirpcglue.Optional,
-		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetSynFloodRate, synFloodRateAttribute, synFloodRateUCIOption),
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetSynfloodRate, synfloodRateAttribute, synfloodRateUCIOption),
 	}
 
-	synFloodBurstSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
-		Description:       synFloodBurstAttributeDescription,
-		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetSynFloodBurst, synFloodBurstAttribute, synFloodBurstUCIOption),
+	synfloodBurstSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
+		Description:       synfloodBurstAttributeDescription,
+		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetSynfloodBurst, synfloodBurstAttribute, synfloodBurstUCIOption),
 		ResourceExistence: lucirpcglue.Optional,
-		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetSynFloodBurst, synFloodBurstAttribute, synFloodBurstUCIOption),
+		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetSynfloodBurst, synfloodBurstAttribute, synfloodBurstUCIOption),
 	}
 
 	tcpSynCookiesSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
@@ -213,9 +213,9 @@ var (
 		lucirpcglue.IdAttribute:    lucirpcglue.IdSchemaAttribute(modelGetId, modelSetId),
 		inputAttribute:             inputSchemaAttribute,
 		outputAttribute:            outputSchemaAttribute,
-		synFloodAttribute:          synFloodSchemaAttribute,
-		synFloodBurstAttribute:     synFloodBurstSchemaAttribute,
-		synFloodRateAttribute:      synFloodRateSchemaAttribute,
+		synfloodProtectAttribute:   synfloodProtectSchemaAttribute,
+		synfloodBurstAttribute:     synfloodBurstSchemaAttribute,
+		synfloodRateAttribute:      synfloodRateSchemaAttribute,
 		tcpEcnAttribute:            tcpEcnSchemaAttribute,
 		tcpSynCookiesAttribute:     tcpSynCookiesSchemaAttribute,
 		tcpWindowScalingAttribute:  tcpWindowScalingSchemaAttribute,
@@ -248,9 +248,9 @@ type model struct {
 	Output            types.String `tfsdk:"output"`
 	Forward           types.String `tfsdk:"forward"`
 	DropInvalid       types.Bool   `tfsdk:"drop_invalid"`
-	SynFlood          types.Bool   `tfsdk:"syn_flood"`
-	SynFloodRate      types.String `tfsdk:"syn_flood_rate"`
-	SynFloodBurst     types.Int64  `tfsdk:"syn_flood_burst"`
+	SynfloodProtect   types.Bool   `tfsdk:"synflood_protect"`
+	SynfloodRate      types.String `tfsdk:"synflood_rate"`
+	SynfloodBurst     types.Int64  `tfsdk:"synflood_burst"`
 	TcpSynCookies     types.Bool   `tfsdk:"tcp_syncookies"`
 	TcpEcn            types.Bool   `tfsdk:"tcp_ecn"`
 	TcpWindowScaling  types.Bool   `tfsdk:"tcp_window_scaling"`
@@ -267,9 +267,9 @@ func modelGetInput(m model) types.String             { return m.Input }
 func modelGetOutput(m model) types.String            { return m.Output }
 func modelGetForward(m model) types.String           { return m.Forward }
 func modelGetDropInvalid(m model) types.Bool         { return m.DropInvalid }
-func modelGetSynFlood(m model) types.Bool            { return m.SynFlood }
-func modelGetSynFloodRate(m model) types.String      { return m.SynFloodRate }
-func modelGetSynFloodBurst(m model) types.Int64      { return m.SynFloodBurst }
+func modelGetSynfloodProtect(m model) types.Bool     { return m.SynfloodProtect }
+func modelGetSynfloodRate(m model) types.String      { return m.SynfloodRate }
+func modelGetSynfloodBurst(m model) types.Int64      { return m.SynfloodBurst }
 func modelGetTcpSynCookies(m model) types.Bool       { return m.TcpSynCookies }
 func modelGetTcpEcn(m model) types.Bool              { return m.TcpEcn }
 func modelGetTcpWindowScaling(m model) types.Bool    { return m.TcpWindowScaling }
@@ -285,9 +285,9 @@ func modelSetInput(m *model, value types.String)             { m.Input = value }
 func modelSetOutput(m *model, value types.String)            { m.Output = value }
 func modelSetForward(m *model, value types.String)           { m.Forward = value }
 func modelSetDropInvalid(m *model, value types.Bool)         { m.DropInvalid = value }
-func modelSetSynFlood(m *model, value types.Bool)            { m.SynFlood = value }
-func modelSetSynFloodRate(m *model, value types.String)      { m.SynFloodRate = value }
-func modelSetSynFloodBurst(m *model, value types.Int64)      { m.SynFloodBurst = value }
+func modelSetSynfloodProtect(m *model, value types.Bool)     { m.SynfloodProtect = value }
+func modelSetSynfloodRate(m *model, value types.String)      { m.SynfloodRate = value }
+func modelSetSynfloodBurst(m *model, value types.Int64)      { m.SynfloodBurst = value }
 func modelSetTcpSynCookies(m *model, value types.Bool)       { m.TcpSynCookies = value }
 func modelSetTcpEcn(m *model, value types.Bool)              { m.TcpEcn = value }
 func modelSetTcpWindowScaling(m *model, value types.Bool)    { m.TcpWindowScaling = value }

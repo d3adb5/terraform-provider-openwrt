@@ -28,9 +28,9 @@ Manages global firewall settings that apply to all zones and rules.
 - `id` (String) Name of the section. This name is only used when interacting with UCI directly.
 - `input` (String) Default policy for traffic entering the router (ACCEPT, DROP, REJECT).
 - `output` (String) Default policy for traffic leaving the router (ACCEPT, DROP, REJECT).
-- `syn_flood` (Boolean) Enable SYN flood protection.
-- `syn_flood_burst` (Number) Burst limit for SYN flood protection.
-- `syn_flood_rate` (String) Rate limit for SYN flood protection (e.g. "25/second").
+- `synflood_burst` (Number) Burst limit for SYN flood protection.
+- `synflood_protect` (Boolean) Enable SYN flood protection.
+- `synflood_rate` (String) Rate limit for SYN flood protection (e.g. "25/second").
 - `tcp_ecn` (Boolean) Enable TCP Explicit Congestion Notification (ECN).
 - `tcp_syncookies` (Boolean) Enable TCP SYN cookie protection.
 - `tcp_window_scaling` (Boolean) Enable TCP window scaling.
