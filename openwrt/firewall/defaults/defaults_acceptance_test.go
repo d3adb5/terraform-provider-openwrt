@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/joneshf/terraform-provider-openwrt/internal/acceptancetest"
+	"github.com/ORFops/terraform-provider-openwrt/internal/acceptancetest"
 )
 
 func TestDataSourceAcceptance(t *testing.T) {
@@ -35,7 +35,7 @@ data "openwrt_firewall_defaults" "this" {
 			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "input", "REJECT"),
 			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "output", "ACCEPT"),
 			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "forward", "REJECT"),
-			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "syn_flood", "true"),
+			resource.TestCheckResourceAttr("data.openwrt_firewall_defaults.this", "synflood_protect", "true"),
 		),
 	}
 
@@ -85,7 +85,7 @@ resource "openwrt_firewall_defaults" "this" {
 			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "input", "REJECT"),
 			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "output", "ACCEPT"),
 			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "forward", "REJECT"),
-			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "syn_flood", "true"),
+			resource.TestCheckResourceAttr("openwrt_firewall_defaults.this", "synflood_protect", "true"),
 		),
 	}
 

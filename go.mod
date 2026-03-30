@@ -1,4 +1,4 @@
-module github.com/joneshf/terraform-provider-openwrt
+module github.com/ORFops/terraform-provider-openwrt
 
 go 1.20
 
