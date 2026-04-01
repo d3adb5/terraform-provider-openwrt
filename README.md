@@ -1,71 +1,115 @@
 # terraform-provider-openwrt
 
-A [Terraform][] provider for [OpenWrt][].
+A [Terraform][] provider for [OpenWrt][] devices, published at
+[registry.terraform.io/ORFops/openwrt](https://registry.terraform.io/providers/ORFops/openwrt/latest).
 
-## Setup
+## Usage
 
-Two tools are used to bootstrap this repo: [`nix`][] and [`direnv`][].
-Once those tools are setup,
-everything else should work seamlessly.
+```hcl
+terraform {
+  required_providers {
+    openwrt = {
+      source  = "ORFops/openwrt"
+      version = "~> 0.1"
+    }
+  }
+}
 
-N.B. Neither tool is actually required.
-Everything in this repo _probably_ could work without either.
-But, any workflow without both is not currently supported.
+provider "openwrt" {
+  host     = "192.168.1.1"
+  port     = 80
+  username = "root"
+  password = "password"
+}
+```
 
-### nix
+## Supported Resources
 
-[`nix`][] is used to make working in the repo reproducible.
+| Resource | Data Source |
+|---|---|
+| `openwrt_acme_acme` | `openwrt_acme_acme` |
+| `openwrt_acme_cert` | `openwrt_acme_cert` |
+| `openwrt_ddns_service` | `openwrt_ddns_service` |
+| `openwrt_dhcp_dhcp` | `openwrt_dhcp_dhcp` |
+| `openwrt_dhcp_dnsmasq` | `openwrt_dhcp_dnsmasq` |
+| `openwrt_dhcp_domain` | `openwrt_dhcp_domain` |
+| `openwrt_dhcp_host` | `openwrt_dhcp_host` |
+| `openwrt_dhcp_odhcpd` | `openwrt_dhcp_odhcpd` |
+| `openwrt_firewall_defaults` | `openwrt_firewall_defaults` |
+| `openwrt_firewall_forwarding` | `openwrt_firewall_forwarding` |
+| `openwrt_firewall_redirect` | `openwrt_firewall_redirect` |
+| `openwrt_firewall_rule` | `openwrt_firewall_rule` |
+| `openwrt_firewall_zone` | `openwrt_firewall_zone` |
+| `openwrt_network_bridge_vlan` | `openwrt_network_bridge_vlan` |
+| `openwrt_network_device` | `openwrt_network_device` |
+| `openwrt_network_globals` | `openwrt_network_globals` |
+| `openwrt_network_interface` | `openwrt_network_interface` |
+| `openwrt_network_route` | `openwrt_network_route` |
+| `openwrt_network_route6` | `openwrt_network_route6` |
+| `openwrt_network_rule` | `openwrt_network_rule` |
+| `openwrt_network_rule6` | `openwrt_network_rule6` |
+| `openwrt_network_switch` | `openwrt_network_switch` |
+| `openwrt_network_switch_vlan` | `openwrt_network_switch_vlan` |
+| `openwrt_system_system` | `openwrt_system_system` |
+| `openwrt_system_timeserver` | `openwrt_system_timeserver` |
+| `openwrt_wireless_wifi_device` | `openwrt_wireless_wifi_device` |
+| `openwrt_wireless_wifi_iface` | `openwrt_wireless_wifi_iface` |
 
-When we come back to the repo in a few days, weeks, months, or years;
-we don't want to have to remember how to get the environment set up properly.
-If someone new comes to the repo,
-they shouldn't have to jump through hoops to make it work on their computer.
-
-See the [install instructions][nix install] for setting up [`nix`][].
-
-After it is setup, it should be enough to launch the shell: `nix-shell`.
-
-### direnv
-
-[`direnv`][] is used to make working with [`nix`][] a little easier.
-
-Without [`direnv`][],
-there is a step that has to happen each time to start working: `nix-shell`.
-It's not a huge burden,
- but it's something extra to remember.
-It also takes a bit of time once the environment gets large enough.
-[`direnv`][] caches the environment of the shell and can automatically spin up the
-environment when the directory is entered.
-This means that working with the project after the initial setup is seamless,
-and more efficient.
-
-See the [install instructions][direnv install] for setting up [`direnv`][].
-
-After it is setup,
-it should be enough to allow it to work: `direnv allow`.
+Full documentation for each resource is available on the
+[Terraform Registry](https://registry.terraform.io/providers/ORFops/openwrt/latest/docs).
 
 ## Development
 
-[`make`][] is used to build everything in this repo.
-Installation of [`make`][] is taken care of by [`nix`][].
-
-Everything can be built from the top-level:
+[`make`][] is used to build and test this repo.
 
 ```sh
-$ make build
+make build   # compile the provider
+make test    # build + docs check + unit + acceptance tests
+make docs    # regenerate docs/
 ```
 
-Easier than that,
-everything can be built and tested in one step:
+### Running acceptance tests
+
+Acceptance tests require Docker to spin up a real OpenWrt instance:
 
 ```sh
-$ make test
+make start-acceptance-test-server
+TF_ACC=1 go test -tags=acceptance.test ./...
+make clean
 ```
 
-[`direnv`]: https://github.com/direnv/direnv
+### Releasing
+
+Releases are created automatically by GitHub Actions when a tag is pushed:
+
+```sh
+git tag v0.x.y
+git push origin v0.x.y
+```
+
+The workflow builds binaries for all supported platforms, signs the checksums
+with GPG, and publishes the release to GitHub. HCP Terraform Registry syncs
+automatically from there.
+
+## Credits
+
+This provider is a fork of
+[northfuse/terraform-provider-openwrt](https://github.com/northfuse/terraform-provider-openwrt),
+which is itself a fork of
+[joneshf/terraform-provider-openwrt](https://github.com/joneshf/terraform-provider-openwrt)
+by Hardy Jones. These upstream projects laid the foundation for the LuCI
+JSON-RPC client, the generic Terraform Plugin Framework glue layer, and the
+majority of the supported resources.
+
+Additional development on this fork was assisted by
+[Claude Code](https://claude.ai/code) (Anthropic), which contributed bug fixes,
+new resources (`network_route`, `network_route6`, `network_rule`, `network_rule6`),
+and correctness fixes (firewall UCI option names, schema attribute types).
+
+## License
+
+See [LICENSE](LICENSE).
+
 [`make`]: https://www.gnu.org/software/make/
-[`nix`]: https://nixos.org
-[direnv install]: https://github.com/direnv/direnv#install
-[nix install]: https://nixos.org/nix/
 [openwrt]: https://openwrt.org/
 [terraform]: https://www.terraform.io/
