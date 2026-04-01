@@ -284,6 +284,7 @@ type ListStringSchemaAttribute[Model any, Request any, Response any] struct {
 	DeprecationMessage  string
 	Description         string
 	MarkdownDescription string
+	PlanModifiers       []planmodifier.List
 	ReadResponse        func(context.Context, string, string, Response, Model) (context.Context, Model, diag.Diagnostics)
 	ResourceExistence   AttributeExistence
 	Sensitive           bool
@@ -324,6 +325,7 @@ func (a ListStringSchemaAttribute[Model, Request, Response]) ToResource() resour
 	if a.ResourceExistence.ToComputed() {
 		listModifiers = []planmodifier.List{listplanmodifier.UseStateForUnknown()}
 	}
+	listModifiers = append(listModifiers, a.PlanModifiers...)
 	return resourceschema.ListAttribute{
 		Computed:            a.ResourceExistence.ToComputed(),
 		DeprecationMessage:  a.DeprecationMessage,

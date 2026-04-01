@@ -1,10 +1,13 @@
 package timeserver
 
 import (
+	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/ORFops/terraform-provider-openwrt/lucirpc"
@@ -30,6 +33,27 @@ const (
 	uciType   = "timeserver"
 )
 
+// serverUnknownAfterApply marks the server list as (known after apply) whenever
+// it is being set. OpenWrt may normalise or augment the list after a write
+// (e.g. by appending default NTP pool servers), so the post-apply value is not
+// guaranteed to equal the planned value.
+type serverUnknownAfterApply struct{}
+
+func (serverUnknownAfterApply) Description(_ context.Context) string {
+	return "Marks server as unknown after apply because OpenWrt may augment the list with default NTP servers."
+}
+
+func (serverUnknownAfterApply) MarkdownDescription(ctx context.Context) string {
+	return serverUnknownAfterApply{}.Description(ctx)
+}
+
+func (serverUnknownAfterApply) PlanModifyList(_ context.Context, req planmodifier.ListRequest, resp *planmodifier.ListResponse) {
+	// Only mark unknown when the value is actually being written (create or change).
+	if req.StateValue.IsNull() || !req.PlanValue.Equal(req.StateValue) {
+		resp.PlanValue = types.ListUnknown(types.StringType)
+	}
+}
+
 var (
 	enabledSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       enabledAttributeDescription,
@@ -54,6 +78,7 @@ var (
 
 	serverSchemaAttribute = lucirpcglue.ListStringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       serverAttributeDescription,
+		PlanModifiers:     []planmodifier.List{serverUnknownAfterApply{}},
 		ReadResponse:      lucirpcglue.ReadResponseOptionListString(modelSetServer, serverAttribute, serverUCIOption),
 		ResourceExistence: lucirpcglue.Optional,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionListString(modelGetServer, serverAttribute, serverUCIOption),
