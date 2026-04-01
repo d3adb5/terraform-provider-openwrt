@@ -88,14 +88,14 @@ var (
 	conLogLevelSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       conLogLevelAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetConLogLevel, conLogLevelAttribute, conLogLevelUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetConLogLevel, conLogLevelAttribute, conLogLevelUCIOption),
 	}
 
 	cronLogLevelSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       cronLogLevelAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetCronLogLevel, cronLogLevelAttribute, cronLogLevelUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetCronLogLevel, cronLogLevelAttribute, cronLogLevelUCIOption),
 	}
 
@@ -109,7 +109,7 @@ var (
 	hostnameSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       hostnameAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetHostname, hostnameAttribute, hostnameUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetHostname, hostnameAttribute, hostnameUCIOption),
 	}
 
@@ -174,7 +174,7 @@ var (
 	logSizeSchemaAttribute = lucirpcglue.Int64SchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       logSizeAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionInt64(modelSetLogSize, logSizeAttribute, logSizeUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionInt64(modelGetLogSize, logSizeAttribute, logSizeUCIOption),
 	}
 
@@ -208,14 +208,14 @@ var (
 	timezoneSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       timezoneAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetTimezone, timezoneAttribute, timezoneUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetTimezone, timezoneAttribute, timezoneUCIOption),
 	}
 
 	ttyLoginSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       ttyLoginAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetTTYLogin, ttyLoginAttribute, ttyLoginUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetTTYLogin, ttyLoginAttribute, ttyLoginUCIOption),
 	}
 

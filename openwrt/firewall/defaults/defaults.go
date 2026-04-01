@@ -89,7 +89,7 @@ var (
 	inputSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       inputAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetInput, inputAttribute, inputUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetInput, inputAttribute, inputUCIOption),
 		Validators:        policyValidators,
 	}
@@ -97,7 +97,7 @@ var (
 	outputSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       outputAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetOutput, outputAttribute, outputUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetOutput, outputAttribute, outputUCIOption),
 		Validators:        policyValidators,
 	}
@@ -105,7 +105,7 @@ var (
 	forwardSchemaAttribute = lucirpcglue.StringSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       forwardAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionString(modelSetForward, forwardAttribute, forwardUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetForward, forwardAttribute, forwardUCIOption),
 		Validators:        policyValidators,
 	}
@@ -141,49 +141,49 @@ var (
 	tcpSynCookiesSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       tcpSynCookiesAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetTcpSynCookies, tcpSynCookiesAttribute, tcpSynCookiesUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetTcpSynCookies, tcpSynCookiesAttribute, tcpSynCookiesUCIOption),
 	}
 
 	tcpEcnSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       tcpEcnAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetTcpEcn, tcpEcnAttribute, tcpEcnUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetTcpEcn, tcpEcnAttribute, tcpEcnUCIOption),
 	}
 
 	tcpWindowScalingSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       tcpWindowScalingAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetTcpWindowScaling, tcpWindowScalingAttribute, tcpWindowScalingUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetTcpWindowScaling, tcpWindowScalingAttribute, tcpWindowScalingUCIOption),
 	}
 
 	acceptRedirectsSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       acceptRedirectsAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetAcceptRedirects, acceptRedirectsAttribute, acceptRedirectsUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetAcceptRedirects, acceptRedirectsAttribute, acceptRedirectsUCIOption),
 	}
 
 	acceptSourceRouteSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       acceptSourceRouteAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetAcceptSourceRoute, acceptSourceRouteAttribute, acceptSourceRouteUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetAcceptSourceRoute, acceptSourceRouteAttribute, acceptSourceRouteUCIOption),
 	}
 
 	autoHelperSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       autoHelperAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetAutoHelper, autoHelperAttribute, autoHelperUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetAutoHelper, autoHelperAttribute, autoHelperUCIOption),
 	}
 
 	customChainsSchemaAttribute = lucirpcglue.BoolSchemaAttribute[model, lucirpc.Options, lucirpc.Options]{
 		Description:       customChainsAttributeDescription,
 		ReadResponse:      lucirpcglue.ReadResponseOptionBool(modelSetCustomChains, customChainsAttribute, customChainsUCIOption),
-		ResourceExistence: lucirpcglue.Optional,
+		ResourceExistence: lucirpcglue.NoValidation,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionBool(modelGetCustomChains, customChainsAttribute, customChainsUCIOption),
 	}
 
