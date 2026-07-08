@@ -8,25 +8,31 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // ErrSectionNotFound is returned by GetSection when the requested section does not exist.
 var ErrSectionNotFound = errors.New("section not found")
 
 const (
-	humanReadableCommitChanges = "commit changes"
-	humanReadableCreateSection = "create section"
-	humanReadableDeleteSection = "delete section"
-	humanReadableGetSection    = "get section"
-	humanReadableLogin         = "login"
-	humanReadableShowChanges   = "show changes"
-	humanReadableUpdateSection = "update section"
+	humanReadableCommitChanges   = "commit changes"
+	humanReadableCreateSection   = "create section"
+	humanReadableDeleteSection   = "delete section"
+	humanReadableGetSection      = "get section"
+	humanReadableGetSections     = "get sections"
+	humanReadableLogin           = "login"
+	humanReadableReorderSections = "reorder sections"
+	humanReadableRevertChanges   = "revert changes"
+	humanReadableShowChanges     = "show changes"
+	humanReadableUpdateSection   = "update section"
 
 	methodChanges = "changes"
 	methodCommit  = "commit"
 	methodDelete  = "delete"
+	methodForeach = "foreach"
 	methodGetAll  = "get_all"
 	methodLogin   = "login"
+	methodRevert  = "revert"
 	methodSection = "section"
 	methodTSet    = "tset"
 
@@ -267,6 +273,121 @@ func (c *Client) GetSection(
 	return result, nil
 }
 
+// GetSections returns all sections of the given type,
+// in the order they appear in the config.
+func (c *Client) GetSections(
+	ctx context.Context,
+	config string,
+	sectionType string,
+) ([]Options, error) {
+	params, err := marshalParams(humanReadableGetSections, config, sectionType)
+	if err != nil {
+		return nil, err
+	}
+
+	requestBody := jsonRPCRequestBody{
+		Method: methodForeach,
+		Params: params,
+	}
+	responseBody, err := c.jsonRPCClientUCI.Invoke(
+		ctx,
+		humanReadableGetSections,
+		requestBody,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("unable to %s: %w", humanReadableGetSections, err)
+	}
+
+	// The result is `false` when no sections match.
+	result := []Options{}
+	if responseBody == nil {
+		return result, nil
+	}
+
+	var noSections bool
+	if json.Unmarshal(*responseBody, &noSections) == nil {
+		return result, nil
+	}
+
+	err = json.Unmarshal(*responseBody, &result)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse %s response: %w", humanReadableGetSections, err)
+	}
+
+	return result, nil
+}
+
+// ReorderSections rewrites the given sections so they appear in the given order.
+// The LuCI JSON-RPC API does not expose UCI's reorder,
+// so each section is deleted and recreated with its existing options,
+// which moves it to the end of the config.
+// All changes are staged and committed once;
+// staged changes are reverted if any step fails.
+func (c *Client) ReorderSections(
+	ctx context.Context,
+	config string,
+	sectionType string,
+	sections []string,
+) (bool, error) {
+	optionsBySection := map[string]Options{}
+	for _, section := range sections {
+		options, err := c.GetSection(ctx, config, section)
+		if err != nil {
+			return false, fmt.Errorf("unable to %s: %w", humanReadableReorderSections, err)
+		}
+
+		actualType, err := options.GetString(".type")
+		if err != nil || actualType != sectionType {
+			return false, fmt.Errorf("unable to %s: section %s.%s is not of type %q", humanReadableReorderSections, config, section, sectionType)
+		}
+
+		for option := range options {
+			if strings.HasPrefix(option, ".") {
+				delete(options, option)
+			}
+		}
+
+		optionsBySection[section] = options
+	}
+
+	err := c.stageReorder(ctx, config, sectionType, sections, optionsBySection)
+	if err != nil {
+		// Discard staged changes so a later commit cannot apply a partial reorder.
+		_, _ = c.invokeBoolean(ctx, humanReadableRevertChanges, methodRevert, config)
+		return false, err
+	}
+
+	return c.CommitChanges(ctx, config)
+}
+
+func (c *Client) stageReorder(
+	ctx context.Context,
+	config string,
+	sectionType string,
+	sections []string,
+	optionsBySection map[string]Options,
+) error {
+	for _, section := range sections {
+		ok, err := c.invokeBoolean(ctx, humanReadableReorderSections, methodDelete, config, section)
+		if err != nil {
+			return err
+		}
+		if !ok {
+			return fmt.Errorf("unable to %s: could not delete section %s.%s", humanReadableReorderSections, config, section)
+		}
+
+		ok, err = c.invokeBoolean(ctx, humanReadableReorderSections, methodSection, config, sectionType, section, optionsBySection[section])
+		if err != nil {
+			return err
+		}
+		if !ok {
+			return fmt.Errorf("unable to %s: could not recreate section %s.%s", humanReadableReorderSections, config, section)
+		}
+	}
+
+	return nil
+}
+
 func (c *Client) ShowChanges(
 	ctx context.Context,
 	config string,
@@ -367,6 +488,62 @@ func (c *Client) UpdateSection(
 	}
 
 	return result, nil
+}
+
+// invokeBoolean invokes a method whose result is `true` to indicate success,
+// or `null`/`false` to indicate failure.
+func (c *Client) invokeBoolean(
+	ctx context.Context,
+	humanReadableMethod string,
+	method string,
+	params ...any,
+) (bool, error) {
+	marshalledParams, err := marshalParams(humanReadableMethod, params...)
+	if err != nil {
+		return false, err
+	}
+
+	requestBody := jsonRPCRequestBody{
+		Method: method,
+		Params: marshalledParams,
+	}
+	responseBody, err := c.jsonRPCClientUCI.Invoke(
+		ctx,
+		humanReadableMethod,
+		requestBody,
+	)
+	if err != nil {
+		return false, fmt.Errorf("unable to %s: %w", humanReadableMethod, err)
+	}
+
+	var result bool
+	if responseBody == nil {
+		return false, nil
+	}
+
+	err = json.Unmarshal(*responseBody, &result)
+	if err != nil {
+		return false, fmt.Errorf("unable to parse %s response: %w", humanReadableMethod, err)
+	}
+
+	return result, nil
+}
+
+func marshalParams(
+	humanReadableMethod string,
+	params ...any,
+) ([]json.RawMessage, error) {
+	marshalled := make([]json.RawMessage, 0, len(params))
+	for _, param := range params {
+		value, err := json.Marshal(param)
+		if err != nil {
+			return nil, fmt.Errorf("unable to serialize parameter %v for %s: %w", param, humanReadableMethod, err)
+		}
+
+		marshalled = append(marshalled, value)
+	}
+
+	return marshalled, nil
 }
 
 func NewClient(
