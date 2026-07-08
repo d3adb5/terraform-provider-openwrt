@@ -278,6 +278,24 @@ func TestOptionsUnmarshalJSON(t *testing.T) {
 		assert.DeepEqual(t, options, want)
 	})
 
+	t.Run("parses numeric metadata", func(t *testing.T) {
+		// Given
+		var options lucirpc.Options
+		rawJSON := `{
+			".index": 13
+		}`
+
+		// When
+		err := json.Unmarshal([]byte(rawJSON), &options)
+
+		// Then
+		want := lucirpc.Options{
+			".index": lucirpc.Integer(13),
+		}
+		assert.NilError(t, err)
+		assert.DeepEqual(t, options, want)
+	})
+
 	t.Run("coerces stringy values", func(t *testing.T) {
 		// Given
 		var options lucirpc.Options
