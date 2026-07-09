@@ -637,7 +637,12 @@ func UpsertRequestOptionBool[Model any](
 		model Model,
 	) (context.Context, lucirpc.Options, diag.Diagnostics) {
 		str := get(model)
-		if !hasValue(str) {
+		if str.IsUnknown() {
+			return ctx, options, diag.Diagnostics{}
+		}
+
+		if str.IsNull() {
+			options[option] = lucirpc.Unset()
 			return ctx, options, diag.Diagnostics{}
 		}
 
@@ -659,7 +664,12 @@ func UpsertRequestOptionInt64[Model any](
 		model Model,
 	) (context.Context, lucirpc.Options, diag.Diagnostics) {
 		str := get(model)
-		if !hasValue(str) {
+		if str.IsUnknown() {
+			return ctx, options, diag.Diagnostics{}
+		}
+
+		if str.IsNull() {
+			options[option] = lucirpc.Unset()
 			return ctx, options, diag.Diagnostics{}
 		}
 
@@ -681,7 +691,12 @@ func UpsertRequestOptionListString[Model any](
 		model Model,
 	) (context.Context, lucirpc.Options, diag.Diagnostics) {
 		str := get(model)
-		if !hasValue(str) {
+		if str.IsUnknown() {
+			return ctx, options, diag.Diagnostics{}
+		}
+
+		if str.IsNull() {
+			options[option] = lucirpc.Unset()
 			return ctx, options, diag.Diagnostics{}
 		}
 
@@ -708,7 +723,12 @@ func UpsertRequestOptionSetString[Model any](
 		model Model,
 	) (context.Context, lucirpc.Options, diag.Diagnostics) {
 		str := get(model)
-		if !hasValue(str) {
+		if str.IsUnknown() {
+			return ctx, options, diag.Diagnostics{}
+		}
+
+		if str.IsNull() {
+			options[option] = lucirpc.Unset()
 			return ctx, options, diag.Diagnostics{}
 		}
 
@@ -735,7 +755,12 @@ func UpsertRequestOptionString[Model any](
 		model Model,
 	) (context.Context, lucirpc.Options, diag.Diagnostics) {
 		str := get(model)
-		if !hasValue(str) {
+		if str.IsUnknown() {
+			return ctx, options, diag.Diagnostics{}
+		}
+
+		if str.IsNull() {
+			options[option] = lucirpc.Unset()
 			return ctx, options, diag.Diagnostics{}
 		}
 
@@ -743,17 +768,6 @@ func UpsertRequestOptionString[Model any](
 		options[option] = lucirpc.String(str.ValueString())
 		return ctx, options, diag.Diagnostics{}
 	}
-}
-
-type attributeHasValue interface {
-	IsNull() bool
-	IsUnknown() bool
-}
-
-func hasValue(
-	attribute attributeHasValue,
-) bool {
-	return !attribute.IsNull() && !attribute.IsUnknown()
 }
 
 type requiredIfAttributeNot[Value any] struct {

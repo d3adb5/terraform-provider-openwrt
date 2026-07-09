@@ -92,61 +92,15 @@ func (c *Client) CreateSection(
 	section string,
 	options Options,
 ) (bool, error) {
-	marshalledConfig, err := json.Marshal(config)
+	set, unset := partitionOptions(options)
+	err := c.stageCreate(ctx, config, sectionType, section, set, unset)
 	if err != nil {
-		return false, fmt.Errorf("unable to serialize config %q for %s: %w", config, humanReadableCreateSection, err)
+		// Discard staged changes so a later commit cannot apply a partial create.
+		_, _ = c.invokeBoolean(ctx, humanReadableRevertChanges, methodRevert, config)
+		return false, err
 	}
 
-	marshalledSectionType, err := json.Marshal(sectionType)
-	if err != nil {
-		return false, fmt.Errorf("unable to serialize sectionType %q for %s: %w", sectionType, humanReadableCreateSection, err)
-	}
-
-	marshalledSection, err := json.Marshal(section)
-	if err != nil {
-		return false, fmt.Errorf("unable to serialize section %q for %s: %w", section, humanReadableCreateSection, err)
-	}
-
-	marshalledOptions, err := json.Marshal(options)
-	if err != nil {
-		return false, fmt.Errorf("unable to serialize options %q for %s: %w", options, humanReadableCreateSection, err)
-	}
-
-	requestBody := jsonRPCRequestBody{
-		Method: methodSection,
-		Params: []json.RawMessage{
-			marshalledConfig,
-			marshalledSectionType,
-			marshalledSection,
-			marshalledOptions,
-		},
-	}
-	responseBody, err := c.jsonRPCClientUCI.Invoke(
-		ctx,
-		humanReadableCreateSection,
-		requestBody,
-	)
-	if err != nil {
-		return false, fmt.Errorf("unable to %s: %w", humanReadableCreateSection, err)
-	}
-
-	// The result can be `true` to indicate success,
-	// or `null` to indicate failure.
-	var result bool
-	if responseBody == nil {
-		return false, nil
-	}
-
-	err = json.Unmarshal(*responseBody, &result)
-	if err != nil {
-		return false, fmt.Errorf("unable to parse %s response: %w", humanReadableCreateSection, err)
-	}
-
-	if !result {
-		return false, fmt.Errorf("unable to %s: it is not clear why this happened", humanReadableCreateSection)
-	}
-
-	result, err = c.CommitChanges(
+	result, err := c.CommitChanges(
 		ctx,
 		config,
 	)
@@ -155,6 +109,83 @@ func (c *Client) CreateSection(
 	}
 
 	return result, nil
+}
+
+func (c *Client) stageCreate(
+	ctx context.Context,
+	config string,
+	sectionType string,
+	section string,
+	set Options,
+	unset []string,
+) error {
+	if len(unset) > 0 {
+		current, err := c.GetSection(ctx, config, section)
+		switch {
+		case errors.Is(err, ErrSectionNotFound):
+			// The section is new; there is nothing to delete.
+
+		case err != nil:
+			return fmt.Errorf("unable to %s: %w", humanReadableCreateSection, err)
+
+		default:
+			err = c.deleteOptions(ctx, humanReadableCreateSection, config, section, unset, current)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	// The section method appends list options to a pre-existing section instead of replacing them,
+	// so it only establishes the section and its type; tset then sets the options.
+	ok, err := c.invokeBoolean(ctx, humanReadableCreateSection, methodSection, config, sectionType, section, Options{})
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return fmt.Errorf("unable to %s: it is not clear why this happened", humanReadableCreateSection)
+	}
+
+	// tset fails on an empty set of options.
+	if len(set) == 0 {
+		return nil
+	}
+
+	ok, err = c.invokeBoolean(ctx, humanReadableCreateSection, methodTSet, config, section, set)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return fmt.Errorf("unable to %s: it is not clear why this happened", humanReadableCreateSection)
+	}
+
+	return nil
+}
+
+// deleteOptions stages the deletion of each unset option that is present in the section.
+func (c *Client) deleteOptions(
+	ctx context.Context,
+	humanReadableMethod string,
+	config string,
+	section string,
+	unset []string,
+	current Options,
+) error {
+	for _, option := range unset {
+		if _, ok := current[option]; !ok {
+			continue
+		}
+
+		ok, err := c.invokeBoolean(ctx, humanReadableMethod, methodDelete, config, section, option)
+		if err != nil {
+			return err
+		}
+		if !ok {
+			return fmt.Errorf("unable to %s: could not delete option %s.%s.%s", humanReadableMethod, config, section, option)
+		}
+	}
+
+	return nil
 }
 
 func (c *Client) DeleteSection(
@@ -431,55 +462,15 @@ func (c *Client) UpdateSection(
 	section string,
 	options Options,
 ) (bool, error) {
-	marshalledConfig, err := json.Marshal(config)
+	set, unset := partitionOptions(options)
+	err := c.stageUpdate(ctx, config, section, set, unset)
 	if err != nil {
-		return false, fmt.Errorf("unable to serialize config %q for %s: %w", config, humanReadableUpdateSection, err)
+		// Discard staged changes so a later commit cannot apply a partial update.
+		_, _ = c.invokeBoolean(ctx, humanReadableRevertChanges, methodRevert, config)
+		return false, err
 	}
 
-	marshalledSection, err := json.Marshal(section)
-	if err != nil {
-		return false, fmt.Errorf("unable to serialize section %q for %s: %w", section, humanReadableUpdateSection, err)
-	}
-
-	marshalledOptions, err := json.Marshal(options)
-	if err != nil {
-		return false, fmt.Errorf("unable to serialize options %q for %s: %w", options, humanReadableCreateSection, err)
-	}
-
-	requestBody := jsonRPCRequestBody{
-		Method: methodTSet,
-		Params: []json.RawMessage{
-			marshalledConfig,
-			marshalledSection,
-			marshalledOptions,
-		},
-	}
-	responseBody, err := c.jsonRPCClientUCI.Invoke(
-		ctx,
-		humanReadableUpdateSection,
-		requestBody,
-	)
-	if err != nil {
-		return false, fmt.Errorf("unable to %s: %w", humanReadableUpdateSection, err)
-	}
-
-	// The result can be `true` to indicate success,
-	// or `null` to indicate failure.
-	var result bool
-	if responseBody == nil {
-		return false, nil
-	}
-
-	err = json.Unmarshal(*responseBody, &result)
-	if err != nil {
-		return false, fmt.Errorf("unable to parse %s response: %w", humanReadableUpdateSection, err)
-	}
-
-	if !result {
-		return false, fmt.Errorf("unable to %s: it is not clear why this happened", humanReadableUpdateSection)
-	}
-
-	result, err = c.CommitChanges(
+	result, err := c.CommitChanges(
 		ctx,
 		config,
 	)
@@ -488,6 +479,45 @@ func (c *Client) UpdateSection(
 	}
 
 	return result, nil
+}
+
+func (c *Client) stageUpdate(
+	ctx context.Context,
+	config string,
+	section string,
+	set Options,
+	unset []string,
+) error {
+	if len(set) == 0 && len(unset) == 0 {
+		return fmt.Errorf("unable to %s: no options provided", humanReadableUpdateSection)
+	}
+
+	if len(unset) > 0 {
+		current, err := c.GetSection(ctx, config, section)
+		if err != nil {
+			return fmt.Errorf("unable to %s: %w", humanReadableUpdateSection, err)
+		}
+
+		err = c.deleteOptions(ctx, humanReadableUpdateSection, config, section, unset, current)
+		if err != nil {
+			return err
+		}
+	}
+
+	// tset fails on an empty set of options.
+	if len(set) == 0 {
+		return nil
+	}
+
+	ok, err := c.invokeBoolean(ctx, humanReadableUpdateSection, methodTSet, config, section, set)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return fmt.Errorf("unable to %s: it is not clear why this happened", humanReadableUpdateSection)
+	}
+
+	return nil
 }
 
 // invokeBoolean invokes a method whose result is `true` to indicate success,

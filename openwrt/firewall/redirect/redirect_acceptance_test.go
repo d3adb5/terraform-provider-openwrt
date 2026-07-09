@@ -147,10 +147,35 @@ resource "openwrt_firewall_redirect" "testing" {
 		),
 	}
 
+	removeAttributeAndReadResource := resource.TestStep{
+		Config: fmt.Sprintf(`
+%s
+
+resource "openwrt_firewall_redirect" "testing" {
+	id         = "testing"
+	name       = "testing"
+	src        = "wan"
+	src_dport  = "8080"
+	dest       = "lan"
+	dest_ip    = "192.168.1.100"
+	dest_port  = "80"
+	proto      = ["tcp"]
+	target     = "DNAT"
+}
+`,
+			providerBlock,
+		),
+		Check: resource.ComposeAggregateTestCheckFunc(
+			resource.TestCheckResourceAttr("openwrt_firewall_redirect.testing", "id", "testing"),
+			resource.TestCheckNoResourceAttr("openwrt_firewall_redirect.testing", "reflection"),
+		),
+	}
+
 	acceptancetest.TerraformSteps(
 		t,
 		createAndReadResource,
 		importValidation,
 		updateAndReadResource,
+		removeAttributeAndReadResource,
 	)
 }

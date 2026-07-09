@@ -416,6 +416,24 @@ func ListString(value []string) *optionListString {
 	}
 }
 
+// partitionOptions splits options into those to set,
+// and the names of those marked with [Unset].
+func partitionOptions(options Options) (Options, []string) {
+	set := Options{}
+	unset := []string{}
+	for option, value := range options {
+		if _, ok := value.(*optionUnset); ok {
+			unset = append(unset, option)
+			continue
+		}
+
+		set[option] = value
+	}
+
+	slices.Sort(unset)
+	return set, unset
+}
+
 type optionString struct {
 	value string
 }
@@ -453,4 +471,41 @@ func String(value string) *optionString {
 	return &optionString{
 		value: value,
 	}
+}
+
+type optionUnset struct{}
+
+func (o *optionUnset) AsBoolean() (bool, error) {
+	return false, NewOptionTypeMismatchError("a boolean", "unset")
+}
+
+func (o *optionUnset) AsInteger() (int, error) {
+	return 0, NewOptionTypeMismatchError("an integer", "unset")
+}
+
+func (o *optionUnset) AsListString() ([]string, error) {
+	return nil, NewOptionTypeMismatchError("a list of strings", "unset")
+}
+
+func (o *optionUnset) AsString() (string, error) {
+	return "", NewOptionTypeMismatchError("a string", "unset")
+}
+
+func (o *optionUnset) Equal(other *optionUnset) bool {
+	return true
+}
+
+func (o *optionUnset) MarshalJSON() ([]byte, error) {
+	return json.Marshal(nil)
+}
+
+func (o *optionUnset) UnmarshalJSON(raw []byte) error {
+	return fmt.Errorf("an option can never parse as unset")
+}
+
+// Unset constructs an [Option] that marks the option for deletion.
+// [Client.CreateSection] and [Client.UpdateSection] delete such options
+// from the section instead of setting them.
+func Unset() *optionUnset {
+	return &optionUnset{}
 }

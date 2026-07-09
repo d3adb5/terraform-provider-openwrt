@@ -922,7 +922,9 @@ func TestClientUpdateSection(t *testing.T) {
 			ctx,
 			"",
 			"",
-			lucirpc.Options{},
+			lucirpc.Options{
+				"option1": lucirpc.String("value1"),
+			},
 		)
 
 		// Then
@@ -955,7 +957,9 @@ func TestClientUpdateSection(t *testing.T) {
 			ctx,
 			"",
 			"",
-			lucirpc.Options{},
+			lucirpc.Options{
+				"option1": lucirpc.String("value1"),
+			},
 		)
 
 		// Then
@@ -980,7 +984,9 @@ func TestClientUpdateSection(t *testing.T) {
 			ctx,
 			"",
 			"",
-			lucirpc.Options{},
+			lucirpc.Options{
+				"option1": lucirpc.String("value1"),
+			},
 		)
 
 		// Then
@@ -1005,7 +1011,9 @@ func TestClientUpdateSection(t *testing.T) {
 			ctx,
 			"",
 			"",
-			lucirpc.Options{},
+			lucirpc.Options{
+				"option1": lucirpc.String("value1"),
+			},
 		)
 
 		// Then
@@ -1032,7 +1040,9 @@ func TestClientUpdateSection(t *testing.T) {
 			ctx,
 			"",
 			"",
-			lucirpc.Options{},
+			lucirpc.Options{
+				"option1": lucirpc.String("value1"),
+			},
 		)
 
 		// Then
@@ -1059,7 +1069,9 @@ func TestClientUpdateSection(t *testing.T) {
 			ctx,
 			"",
 			"",
-			lucirpc.Options{},
+			lucirpc.Options{
+				"option1": lucirpc.String("value1"),
+			},
 		)
 
 		// Then
@@ -1086,7 +1098,9 @@ func TestClientUpdateSection(t *testing.T) {
 			ctx,
 			"",
 			"",
-			lucirpc.Options{},
+			lucirpc.Options{
+				"option1": lucirpc.String("value1"),
+			},
 		)
 
 		// Then
@@ -1133,12 +1147,37 @@ func TestClientUpdateSection(t *testing.T) {
 			ctx,
 			"",
 			"",
-			lucirpc.Options{},
+			lucirpc.Options{
+				"option1": lucirpc.String("value1"),
+			},
 		)
 
 		// Then
 		assert.Check(t, committed)
 	})
+}
+
+// methodTrackingHandler records the JSON-RPC methods invoked,
+// responding to each with the configured result (`true` when unconfigured).
+func methodTrackingHandler(methods *[]string, results map[string]string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var requestBody struct {
+			Method string `json:"method"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&requestBody)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		*methods = append(*methods, requestBody.Method)
+		result, ok := results[requestBody.Method]
+		if !ok {
+			result = "true"
+		}
+
+		fmt.Fprintf(w, `{"result": %s}`, result)
+	}
 }
 
 func authenticatedClient(
@@ -1264,27 +1303,6 @@ func TestClientGetSections(t *testing.T) {
 }
 
 func TestClientReorderSections(t *testing.T) {
-	methodTrackingHandler := func(methods *[]string, results map[string]string) http.HandlerFunc {
-		return func(w http.ResponseWriter, r *http.Request) {
-			var requestBody struct {
-				Method string `json:"method"`
-			}
-			err := json.NewDecoder(r.Body).Decode(&requestBody)
-			if err != nil {
-				w.WriteHeader(http.StatusBadRequest)
-				return
-			}
-
-			*methods = append(*methods, requestBody.Method)
-			result, ok := results[requestBody.Method]
-			if !ok {
-				result = "true"
-			}
-
-			fmt.Fprintf(w, `{"result": %s}`, result)
-		}
-	}
-
 	t.Run("deletes and recreates sections in order with a single commit", func(t *testing.T) {
 		// Given
 		ctx := context.Background()
@@ -1370,6 +1388,164 @@ func TestClientReorderSections(t *testing.T) {
 
 		// Then
 		assert.ErrorContains(t, err, "could not delete section firewall.a")
+		assert.DeepEqual(t, methods, []string{"get_all", "delete", "revert"})
+	})
+}
+
+func TestClientUnsetOptions(t *testing.T) {
+	t.Run("update deletes unset options that exist", func(t *testing.T) {
+		// Given
+		ctx := context.Background()
+		methods := []string{}
+		handle := methodTrackingHandler(&methods, map[string]string{
+			"get_all": `{".name": "testing", ".type": "redirect", "reflection": "1"}`,
+		})
+		client, close := authenticatedClient(
+			t,
+			ctx,
+			handle,
+		)
+		defer close()
+
+		// When
+		result, err := client.UpdateSection(
+			ctx,
+			"firewall",
+			"testing",
+			lucirpc.Options{
+				"name":       lucirpc.String("testing"),
+				"reflection": lucirpc.Unset(),
+			},
+		)
+
+		// Then
+		assert.NilError(t, err)
+		assert.Check(t, result)
+		assert.DeepEqual(t, methods, []string{"get_all", "delete", "tset", "commit"})
+	})
+
+	t.Run("update skips unset options that do not exist", func(t *testing.T) {
+		// Given
+		ctx := context.Background()
+		methods := []string{}
+		handle := methodTrackingHandler(&methods, map[string]string{
+			"get_all": `{".name": "testing", ".type": "redirect"}`,
+		})
+		client, close := authenticatedClient(
+			t,
+			ctx,
+			handle,
+		)
+		defer close()
+
+		// When
+		result, err := client.UpdateSection(
+			ctx,
+			"firewall",
+			"testing",
+			lucirpc.Options{
+				"name":       lucirpc.String("testing"),
+				"reflection": lucirpc.Unset(),
+			},
+		)
+
+		// Then
+		assert.NilError(t, err)
+		assert.Check(t, result)
+		assert.DeepEqual(t, methods, []string{"get_all", "tset", "commit"})
+	})
+
+	t.Run("create ignores unset options for a new section", func(t *testing.T) {
+		// Given
+		ctx := context.Background()
+		methods := []string{}
+		handle := methodTrackingHandler(&methods, map[string]string{
+			"get_all": "null",
+		})
+		client, close := authenticatedClient(
+			t,
+			ctx,
+			handle,
+		)
+		defer close()
+
+		// When
+		result, err := client.CreateSection(
+			ctx,
+			"firewall",
+			"redirect",
+			"testing",
+			lucirpc.Options{
+				"name":       lucirpc.String("testing"),
+				"reflection": lucirpc.Unset(),
+			},
+		)
+
+		// Then
+		assert.NilError(t, err)
+		assert.Check(t, result)
+		assert.DeepEqual(t, methods, []string{"get_all", "section", "tset", "commit"})
+	})
+
+	t.Run("create deletes unset options from an existing section", func(t *testing.T) {
+		// Given
+		ctx := context.Background()
+		methods := []string{}
+		handle := methodTrackingHandler(&methods, map[string]string{
+			"get_all": `{".name": "testing", ".type": "redirect", "reflection": "1"}`,
+		})
+		client, close := authenticatedClient(
+			t,
+			ctx,
+			handle,
+		)
+		defer close()
+
+		// When
+		result, err := client.CreateSection(
+			ctx,
+			"firewall",
+			"redirect",
+			"testing",
+			lucirpc.Options{
+				"name":       lucirpc.String("testing"),
+				"reflection": lucirpc.Unset(),
+			},
+		)
+
+		// Then
+		assert.NilError(t, err)
+		assert.Check(t, result)
+		assert.DeepEqual(t, methods, []string{"get_all", "delete", "section", "tset", "commit"})
+	})
+
+	t.Run("update reverts staged changes on failure", func(t *testing.T) {
+		// Given
+		ctx := context.Background()
+		methods := []string{}
+		handle := methodTrackingHandler(&methods, map[string]string{
+			"get_all": `{".name": "testing", ".type": "redirect", "reflection": "1"}`,
+			"delete":  "false",
+		})
+		client, close := authenticatedClient(
+			t,
+			ctx,
+			handle,
+		)
+		defer close()
+
+		// When
+		_, err := client.UpdateSection(
+			ctx,
+			"firewall",
+			"testing",
+			lucirpc.Options{
+				"reflection": lucirpc.Unset(),
+			},
+		)
+
+		// Then
+		assert.ErrorContains(t, err, "could not delete option firewall.testing.reflection")
 		assert.DeepEqual(t, methods, []string{"get_all", "delete", "revert"})
 	})
 }

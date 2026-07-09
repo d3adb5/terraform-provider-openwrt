@@ -38,7 +38,7 @@ func TestClientCreateSectionAcceptance(t *testing.T) {
 		)
 
 		// When
-		got, err := client.CreateSection(
+		_, err := client.CreateSection(
 			ctx,
 			"",
 			"",
@@ -47,8 +47,7 @@ func TestClientCreateSectionAcceptance(t *testing.T) {
 		)
 
 		// Then
-		assert.NilError(t, err)
-		assert.Check(t, !got)
+		assert.ErrorContains(t, err, "unable to create section")
 	})
 
 	t.Run("returns true when successful", func(t *testing.T) {
@@ -441,7 +440,7 @@ func TestClientUpdateSectionAcceptance(t *testing.T) {
 		)
 
 		// When
-		got, err := client.UpdateSection(
+		_, err := client.UpdateSection(
 			ctx,
 			"",
 			"",
@@ -449,8 +448,7 @@ func TestClientUpdateSectionAcceptance(t *testing.T) {
 		)
 
 		// Then
-		assert.NilError(t, err)
-		assert.Check(t, !got)
+		assert.ErrorContains(t, err, "unable to update section")
 	})
 
 	t.Run("fails with no options", func(t *testing.T) {
@@ -477,7 +475,7 @@ func TestClientUpdateSectionAcceptance(t *testing.T) {
 		assert.NilError(t, err)
 
 		// When
-		got, err := client.UpdateSection(
+		_, err = client.UpdateSection(
 			ctx,
 			"network",
 			"testing",
@@ -485,8 +483,7 @@ func TestClientUpdateSectionAcceptance(t *testing.T) {
 		)
 
 		// Then
-		assert.NilError(t, err)
-		assert.Check(t, !got)
+		assert.ErrorContains(t, err, "unable to update section")
 	})
 
 	t.Run("returns true when successful", func(t *testing.T) {
