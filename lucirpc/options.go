@@ -326,14 +326,29 @@ func (o *optionInteger) MarshalJSON() ([]byte, error) {
 //
 // Integers are stored in UCI as a string.
 // We try to parse one of these out of the raw JSON by first making sure it's a valid string.
+//
+// However, integer metadata from LuCI's JSON-RPC API (e.g. ".index") is returned as a JSON number.
+// We first try to parse the value as a normal JSON number,
+// in case it happens to be metadata.
 func (o *optionInteger) UnmarshalJSON(raw []byte) error {
+	// First try to parse as a JSON number.
+	// We could be dealing with metadata.
+	var value int
+	err := json.Unmarshal(raw, &value)
+	if err == nil {
+		o.value = value
+		return nil
+	}
+
+	// If that fails,
+	// try to parse as a UCI integer.
 	var intish string
-	err := json.Unmarshal(raw, &intish)
+	err = json.Unmarshal(raw, &intish)
 	if err != nil {
 		return fmt.Errorf("could not convert to a string: %w", err)
 	}
 
-	value, err := strconv.Atoi(intish)
+	value, err = strconv.Atoi(intish)
 	if err != nil {
 		return fmt.Errorf("unable to parse as an integer: %w", err)
 	}

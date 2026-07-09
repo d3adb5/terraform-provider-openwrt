@@ -38,6 +38,8 @@ const (
 	nameAttributeDescription = "Name of the redirect."
 	nameUCIOption            = "name"
 
+	orderingSchemaDescription = "Relative order of firewall redirects (port forwards). OpenWrt applies redirects in the order they appear in the firewall config, and the first matching redirect wins, so overlapping redirects behave differently depending on their order."
+
 	protoAttribute            = "proto"
 	protoAttributeDescription = "List of protocols to match (e.g. [\"tcp\"], [\"udp\"], [\"tcp\", \"udp\"])."
 	protoUCIOption            = "proto"
@@ -264,6 +266,14 @@ func NewResource() resource.Resource {
 		modelGetId,
 		schemaAttributes,
 		schemaDescription,
+		uciConfig,
+		uciType,
+	)
+}
+
+func NewOrderingResource() resource.Resource {
+	return lucirpcglue.NewOrderingResource(
+		orderingSchemaDescription,
 		uciConfig,
 		uciType,
 	)

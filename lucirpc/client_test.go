@@ -1197,3 +1197,179 @@ func newServer(
 
 	return address, port, server.Close
 }
+
+func TestClientGetSections(t *testing.T) {
+	t.Run("returns sections in config order", func(t *testing.T) {
+		// Given
+		ctx := context.Background()
+		handle := func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, `{
+				"result": [
+					{".name": "second", ".type": "redirect", ".index": 7},
+					{".name": "first", ".type": "redirect", ".index": 3}
+				]
+			}`)
+		}
+		client, close := authenticatedClient(
+			t,
+			ctx,
+			http.HandlerFunc(handle),
+		)
+		defer close()
+
+		// When
+		sections, err := client.GetSections(
+			ctx,
+			"firewall",
+			"redirect",
+		)
+
+		// Then
+		assert.NilError(t, err)
+		assert.Equal(t, len(sections), 2)
+		name, err := sections[0].GetString(".name")
+		assert.NilError(t, err)
+		assert.Equal(t, name, "second")
+		name, err = sections[1].GetString(".name")
+		assert.NilError(t, err)
+		assert.Equal(t, name, "first")
+	})
+
+	t.Run("returns no sections when result is false", func(t *testing.T) {
+		// Given
+		ctx := context.Background()
+		handle := func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, `{
+				"result": false
+			}`)
+		}
+		client, close := authenticatedClient(
+			t,
+			ctx,
+			http.HandlerFunc(handle),
+		)
+		defer close()
+
+		// When
+		sections, err := client.GetSections(
+			ctx,
+			"firewall",
+			"redirect",
+		)
+
+		// Then
+		assert.NilError(t, err)
+		assert.Equal(t, len(sections), 0)
+	})
+}
+
+func TestClientReorderSections(t *testing.T) {
+	methodTrackingHandler := func(methods *[]string, results map[string]string) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			var requestBody struct {
+				Method string `json:"method"`
+			}
+			err := json.NewDecoder(r.Body).Decode(&requestBody)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			*methods = append(*methods, requestBody.Method)
+			result, ok := results[requestBody.Method]
+			if !ok {
+				result = "true"
+			}
+
+			fmt.Fprintf(w, `{"result": %s}`, result)
+		}
+	}
+
+	t.Run("deletes and recreates sections in order with a single commit", func(t *testing.T) {
+		// Given
+		ctx := context.Background()
+		methods := []string{}
+		handle := methodTrackingHandler(&methods, map[string]string{
+			"get_all": `{".name": "a", ".type": "redirect", "name": "a"}`,
+		})
+		client, close := authenticatedClient(
+			t,
+			ctx,
+			handle,
+		)
+		defer close()
+
+		// When
+		result, err := client.ReorderSections(
+			ctx,
+			"firewall",
+			"redirect",
+			[]string{"a", "b"},
+		)
+
+		// Then
+		assert.NilError(t, err)
+		assert.Check(t, result)
+		assert.DeepEqual(t, methods, []string{
+			"get_all", "get_all",
+			"delete", "section",
+			"delete", "section",
+			"commit",
+		})
+	})
+
+	t.Run("refuses to reorder a section of the wrong type", func(t *testing.T) {
+		// Given
+		ctx := context.Background()
+		methods := []string{}
+		handle := methodTrackingHandler(&methods, map[string]string{
+			"get_all": `{".name": "a", ".type": "zone", "name": "a"}`,
+		})
+		client, close := authenticatedClient(
+			t,
+			ctx,
+			handle,
+		)
+		defer close()
+
+		// When
+		_, err := client.ReorderSections(
+			ctx,
+			"firewall",
+			"redirect",
+			[]string{"a"},
+		)
+
+		// Then
+		assert.ErrorContains(t, err, `section firewall.a is not of type "redirect"`)
+		assert.DeepEqual(t, methods, []string{"get_all"})
+	})
+
+	t.Run("reverts staged changes on failure", func(t *testing.T) {
+		// Given
+		ctx := context.Background()
+		methods := []string{}
+		handle := methodTrackingHandler(&methods, map[string]string{
+			"get_all": `{".name": "a", ".type": "redirect", "name": "a"}`,
+			"delete":  "false",
+		})
+		client, close := authenticatedClient(
+			t,
+			ctx,
+			handle,
+		)
+		defer close()
+
+		// When
+		_, err := client.ReorderSections(
+			ctx,
+			"firewall",
+			"redirect",
+			[]string{"a"},
+		)
+
+		// Then
+		assert.ErrorContains(t, err, "could not delete section firewall.a")
+		assert.DeepEqual(t, methods, []string{"get_all", "delete", "revert"})
+	})
+}

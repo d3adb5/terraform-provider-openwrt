@@ -240,6 +240,7 @@ func (p *openWrtProvider) Resources(
 		networkrule6.NewResource,
 		networkswitch.NewResource,
 		odhcpd.NewResource,
+		redirect.NewOrderingResource,
 		redirect.NewResource,
 		rule.NewResource,
 		switchvlan.NewResource,
