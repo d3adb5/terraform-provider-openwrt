@@ -7,6 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	frameworkresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -25,8 +26,9 @@ const (
 )
 
 var (
-	_ frameworkresource.Resource              = &orderingResource{}
-	_ frameworkresource.ResourceWithConfigure = &orderingResource{}
+	_ frameworkresource.Resource                = &orderingResource{}
+	_ frameworkresource.ResourceWithConfigure   = &orderingResource{}
+	_ frameworkresource.ResourceWithImportState = &orderingResource{}
 )
 
 // NewOrderingResource constructs a resource that manages the relative order
@@ -111,6 +113,26 @@ func (d *orderingResource) Delete(
 	tflog.Info(ctx, fmt.Sprintf("Deleting %s resource", d.fullTypeName))
 }
 
+// ImportState brings the current order of the sections into Terraform state.
+// The import id is always the UCI config and section type,
+// and every section of the type is adopted.
+func (d *orderingResource) ImportState(
+	ctx context.Context,
+	req frameworkresource.ImportStateRequest,
+	res *frameworkresource.ImportStateResponse,
+) {
+	expected := fmt.Sprintf("%s.%s", d.uciConfig, d.uciType)
+	if req.ID != expected {
+		res.Diagnostics.AddError(
+			"Invalid import id",
+			fmt.Sprintf("This resource is always imported with the id %q, got: %q", expected, req.ID),
+		)
+		return
+	}
+
+	frameworkresource.ImportStatePassthroughID(ctx, path.Root(IdAttribute), req, res)
+}
+
 // Metadata sets the resource type name.
 func (d *orderingResource) Metadata(
 	ctx context.Context,
@@ -134,10 +156,20 @@ func (d *orderingResource) Read(
 		return
 	}
 
-	var ids []string
-	res.Diagnostics.Append(model.Ids.ElementsAs(ctx, &ids, false)...)
-	if res.Diagnostics.HasError() {
-		return
+	// The ids are unknown right after an import,
+	// in which case every section of the type is adopted.
+	adoptAll := model.Ids.IsNull()
+	managed := map[string]bool{}
+	if !adoptAll {
+		var ids []string
+		res.Diagnostics.Append(model.Ids.ElementsAs(ctx, &ids, false)...)
+		if res.Diagnostics.HasError() {
+			return
+		}
+
+		for _, id := range ids {
+			managed[id] = true
+		}
 	}
 
 	sections, err := d.client.GetSections(ctx, d.uciConfig, d.uciType)
@@ -151,11 +183,6 @@ func (d *orderingResource) Read(
 
 	// Keep only the sections this resource manages,
 	// in the order they currently appear in the config.
-	managed := map[string]bool{}
-	for _, id := range ids {
-		managed[id] = true
-	}
-
 	current := []string{}
 	for _, section := range sections {
 		name, err := section.GetString(idUCISection)
@@ -167,7 +194,7 @@ func (d *orderingResource) Read(
 			return
 		}
 
-		if managed[name] {
+		if adoptAll || managed[name] {
 			current = append(current, name)
 		}
 	}

@@ -97,6 +97,13 @@ resource "openwrt_firewall_redirect_ordering" "this" {
 		),
 	}
 
+	importValidation := resource.TestStep{
+		ImportState:       true,
+		ImportStateId:     "firewall.redirect",
+		ImportStateVerify: true,
+		ResourceName:      "openwrt_firewall_redirect_ordering.this",
+	}
+
 	updateAndReadResource := resource.TestStep{
 		Config: fmt.Sprintf(`
 %s
@@ -123,6 +130,7 @@ resource "openwrt_firewall_redirect_ordering" "this" {
 	acceptancetest.TerraformSteps(
 		t,
 		createAndReadResource,
+		importValidation,
 		updateAndReadResource,
 	)
 }
